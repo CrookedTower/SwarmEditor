@@ -1,0 +1,60 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Swarm.Editor"
+             xmlns:converters="using:Swarm.Editor.Common.Converters"
+             xmlns:vm="using:Swarm.Editor.ViewModels"
+             xmlns:explorer="using:Swarm.Editor.Views.FileExplorer"
+             xmlns:vm_chat="using:Swarm.Editor.ViewModels.Chat"
+             xmlns:chat="using:Swarm.Editor.Views.Chat"
+             x:Class="Swarm.Editor.App"
+             RequestedThemeVariant="Dark">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <!-- Add DataTemplates section -->
+    <Application.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:FileExplorerViewModel}">
+            <explorer:FileExplorerView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm_chat:ChatViewModel}">
+            <chat:ChatPanel />
+        </DataTemplate>
+    </Application.DataTemplates>
+
+    <!-- Uncomment styles to properly render UI -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Centralized Converters (Globally Available - Defined first) -->
+            <converters:BoolToFolderIconConverter x:Key="BoolToFolderIconConverter" />
+            <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+            <converters:CountToInverseVisibilityConverter x:Key="CountToInverseVisibilityConverter" />
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+            <converters:BoolToAlignmentConverter x:Key="BoolToAlignmentConverter" />
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- Override Fluent Theme Brushes -->
+                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelected">#1E1E1E</SolidColorBrush>
+                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver">#1E1E1E</SolidColorBrush>
+                    <SolidColorBrush x:Key="TabControlPipeFillSelected">#5D1A1A</SolidColorBrush>
+                </ResourceDictionary>
+                <!-- Add Light theme overrides here if needed later -->
+                <ResourceDictionary x:Key="Light">
+                    <!-- Placeholder for Light theme overrides -->
+                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelected">#E0E0E0</SolidColorBrush>
+                    <SolidColorBrush x:Key="TreeViewItemBackgroundSelectedPointerOver">#E0E0E0</SolidColorBrush>
+                    <SolidColorBrush x:Key="TabControlPipeFillSelected">#ADD8E6</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            
+            <!-- Other Global Resources -->
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+        <StyleInclude Source="avares://Swarm.Editor/Styles/CommonStyles.axaml" />
+    </Application.Styles>
+</Application> 

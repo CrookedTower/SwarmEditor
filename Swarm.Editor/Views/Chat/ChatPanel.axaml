@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Swarm.Editor.ViewModels.Chat"
+             xmlns:model="using:Swarm.Editor.Models.Chat"
+             xmlns:converters="using:Swarm.Editor.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
+             x:Class="Swarm.Editor.Views.Chat.ChatPanel"
+             x:DataType="vm:ChatViewModel">
+    
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#333337" 
+                BorderThickness="0,0,0,1" 
+                BorderBrush="#3F3F46" 
+                Height="30" 
+                Padding="10,0,10,0">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="SWARM" 
+                           Foreground="#E8E8E8" 
+                           VerticalAlignment="Center" 
+                           Margin="10,0,0,0"
+                           FontSize="12" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                    <Ellipse Width="10" Height="10" 
+                             Fill="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}" />
+                    <Button Content="Clear" 
+                          Command="{Binding ClearChatCommand}" 
+                          Classes="small" />
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Message List -->
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Messages}" Margin="5">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="model:ChatMessage">
+                        <Border Margin="5" 
+                                Padding="10" 
+                                CornerRadius="8" 
+                                Background="{Binding IsUserMessage, Converter={StaticResource BoolToBackgroundConverter}}">
+                            <StackPanel>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="1" Text="{Binding Timestamp, StringFormat=\{0:HH:mm\}}"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                               HorizontalAlignment="Right"
+                                               FontSize="11" />
+                                </Grid>
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Margin="0,5,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        
+        <!-- Status Message -->
+        <TextBlock Grid.Row="1" 
+                   Text="{Binding StatusMessage}" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" 
+                   IsVisible="{Binding StatusMessage, Converter={StaticResource StringToVisibilityConverter}}" 
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+        
+        <!-- Input Area -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="10">
+            <TextBox Grid.Column="0"
+                     Text="{Binding InputText}"
+                     Watermark="Type your message here..."
+                     AcceptsReturn="False" />
+            <Button Grid.Column="1"
+                    Content="Send"
+                    Command="{Binding SendMessageCommand}"
+                    IsEnabled="{Binding !!InputText}"
+                    Margin="5,0,0,0" />
+        </Grid>
+    </Grid>
+</UserControl> 

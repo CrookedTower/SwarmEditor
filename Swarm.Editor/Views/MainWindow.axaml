@@ -1,0 +1,207 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:Swarm.Editor"
+        xmlns:editor="using:Swarm.Editor.Views.CodeEditor"
+        xmlns:explorer="using:Swarm.Editor.Views.FileExplorer"
+        xmlns:chat="using:Swarm.Editor.Views.Chat"
+        xmlns:vm="using:Swarm.Editor.ViewModels"
+        xmlns:converters="using:Swarm.Editor.Common.Converters"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="Swarm.Editor.MainWindow"
+        Title="Swarm Editor">
+
+    <Window.Resources>
+        <!-- REMOVED Centralized Converters -->
+        
+        <!-- Editor Template (Keep specific resources if needed) -->
+        <DataTemplate x:Key="EditorTemplate">
+            <editor:SwarmCodeEditor Text="{Binding Content, Mode=TwoWay}"/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Global styles apply to all windows -->
+        <Style Selector="Window">
+            <Setter Property="Background" Value="#1E1E1E"/>
+        </Style>
+
+        <!-- Start: Menu Styles -->
+        <Style Selector="Menu">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+        
+        <Style Selector="MenuItem">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <!-- End: Menu Styles -->
+
+        <!-- Start: Status Bar Styles -->
+        <Style Selector="Border.statusBar">
+            <Setter Property="BorderThickness" Value="0,1,0,0"/>
+            <Setter Property="BorderBrush" Value="#5D1A1A"/>
+            <Setter Property="Background" Value="#5D1A1A"/>
+            <Setter Property="Height" Value="22"/>
+        </Style>
+        
+        <Style Selector="TextBlock.statusText">
+            <Setter Property="Margin" Value="5,2,5,2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!-- End: Status Bar Styles -->
+
+        <!-- Start: Layout Styles -->
+        <!-- Style for the main SplitView separator -->
+        
+        <Style Selector="GridSplitter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="ResizeDirection" Value="Columns"/>
+        </Style>
+        
+        
+        <Style Selector="Border.swarmPanel">
+            <Setter Property="BorderThickness" Value="1,0,0,0"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="Background" Value="#252526"/>
+        </Style>
+        
+        <Style Selector="TextBlock.placeholderText">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+        </Style>
+        
+        <Style Selector="Grid.editorGrid">
+            <Setter Property="Background" Value="#1E1E1E"/>
+        </Style>
+        <!-- End: Layout Styles -->
+
+    </Window.Styles>
+
+    <DockPanel>
+        <!-- Menu remains at the top -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New File" Command="{Binding NewFileCommand}" />
+                <MenuItem Header="_Open File..." Command="{Binding OpenFileCommand}" />
+                <MenuItem Header="Open _Folder..." Command="{Binding OpenFolderCommand}" />
+                <Separator />
+                <MenuItem Header="_Save" Command="{Binding SaveFileCommand}" />
+                <MenuItem Header="Save _As..." Command="{Binding SaveFileAsCommand}" />
+                <Separator />
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                 <MenuItem Header="_Undo" />
+                 <MenuItem Header="_Redo" />
+                 <Separator />
+                 <MenuItem Header="Cu_t" />
+                 <MenuItem Header="_Copy" />
+                 <MenuItem Header="_Paste" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Status Bar remains at the bottom -->
+        <Border DockPanel.Dock="Bottom" Classes="statusBar">
+            <TextBlock Text="{Binding CurrentFilePath, StringFormat='File: {0}', FallbackValue='Ready'}" 
+                      Classes="statusText"/>
+        </Border>
+
+        <!-- Main content area using Grid with GridSplitters for resizing -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" MinWidth="100" /> <!-- Col 0: File Explorer -->
+                <ColumnDefinition Width="Auto" />                <!-- Col 1: Splitter 1 -->
+                <ColumnDefinition Width="*" MinWidth="300"/>      <!-- Col 2: Editor Area -->
+                <ColumnDefinition Width="Auto" />                 <!-- Col 3: Splitter 2 -->
+                <ColumnDefinition Width="300" MinWidth="100"/>  <!-- Col 4: Swarm Panel -->
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left Pane: File Explorer -->
+            <ContentControl Grid.Column="0" Content="{Binding LeftPanelContent}" />
+            
+            <!-- Splitter 1 -->
+            <GridSplitter Grid.Column="1" Width="1" Background="Transparent" Margin="-6,0,0,0" />
+            
+            <!-- Editor Area -->
+            <Grid Grid.Column="2" Classes="editorGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Tab Bar with + Button -->
+                <DockPanel Grid.Row="0" Height="32" LastChildFill="True" Background="#2D2D30">
+                    <!-- New File Button -->
+                    <Button DockPanel.Dock="Right" 
+                           Command="{Binding NewFileCommand}" 
+                           Width="32" 
+                           Height="32"
+                           Background="#2D2D30"
+                           Foreground="#CCCCCC"
+                           BorderThickness="0">
+                        <TextBlock Text="+" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+                    
+                    <!-- Document Tabs -->
+                    <TabControl Name="DocumentTabControl"
+                              ItemsSource="{Binding DocumentTabs}"
+                              SelectedItem="{Binding ActiveDocument}"
+                              TabStripPlacement="Top"
+                              Padding="0"
+                              Margin="0">
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding TabTitle}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <Button Grid.Column="1" Classes="closeTab"
+                                          Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                          CommandParameter="{Binding}">
+                                        <TextBlock Text="✕" FontSize="8"/>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <!-- Empty template to suppress default content display -->
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
+                </DockPanel>
+                
+                <!-- Editor Content -->
+                <ContentPresenter Grid.Row="1"
+                                 Content="{Binding #DocumentTabControl.SelectedItem}"
+                                 ContentTemplate="{StaticResource EditorTemplate}" 
+                                 Margin="0,8,0,0" 
+                                 />
+            </Grid>
+            
+            <!-- Splitter 2 -->
+            <GridSplitter Grid.Column="3" Width="1" Background="Transparent" Margin="0,0,-6,0" ZIndex="1" />
+            
+            <!-- Swarm Panel -->
+            <Border Grid.Column="4" Classes="swarmPanel" Background="#252526"> 
+                 <ContentControl Content="{Binding RightPanelContent}" />
+            </Border>
+        </Grid>
+    </DockPanel>
+
+</Window> 

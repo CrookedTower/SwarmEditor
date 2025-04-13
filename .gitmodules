@@ -1,0 +1,3 @@
+[submodule "Swarm.Editor.Libraries/AvaloniaEdit"]
+	path = Swarm.Editor.Libraries/AvaloniaEdit
+	url = https://github.com/AvaloniaUI/AvaloniaEdit.git

@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Swarm.Editor.ViewModels"
+             xmlns:converters="using:Swarm.Editor.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
+             x:Class="Swarm.Editor.Views.FileExplorer.FileExplorerView">
+
+    <Border Background="#252526" 
+            BorderBrush="#3F3F46" 
+            BorderThickness="0">
+        <DockPanel LastChildFill="True">
+            <!-- Explorer header -->
+            <Border DockPanel.Dock="Top" 
+                    Background="#333337" 
+                    BorderThickness="0,0,0,1" 
+                    BorderBrush="#3F3F46" 
+                    Height="30">
+                <TextBlock Text="EXPLORER" 
+                           Foreground="#E8E8E8" 
+                           VerticalAlignment="Center" 
+                           Margin="10,0,0,0"
+                           FontSize="12"/>
+            </Border>
+            
+            <!-- TreeView for files and folders -->
+            <TreeView ItemsSource="{Binding RootItems}" 
+                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                      Background="Transparent">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal" Spacing="5" Margin="-4,0,0,0">
+                            <!-- Show different icon for files vs folders -->
+                            <TextBlock Text="{Binding IsDirectory, Converter={StaticResource BoolToFolderIconConverter}}"
+                                       FontSize="10" />
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+                <TreeView.Styles>
+                    <Style Selector="TreeViewItem">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    </Style>
+                </TreeView.Styles>
+            </TreeView>
+        </DockPanel>
+    </Border>
+</UserControl> 

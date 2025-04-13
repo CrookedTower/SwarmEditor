@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:local="clr-namespace:Swarm.Editor.Views.CodeEditor"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Swarm.Editor.Views.CodeEditor.SwarmCodeEditor"
+             TextViewMargin="5,0,0,0">
+
+    <!-- Use AvaloniaEdit's TextEditor instead of TextBox for better code editing features -->
+    <avaloniaEdit:TextEditor x:Name="Editor"
+                           Background="Transparent"
+                           FontFamily="Cascadia Code,Menlo,monospace"
+                           FontSize="14"
+                           ShowLineNumbers="True"
+                           WordWrap="False"
+                           HorizontalScrollBarVisibility="Auto"
+                           VerticalScrollBarVisibility="Auto"
+                           Padding="12,0,0,0" 
+                            />
+
+</UserControl> 

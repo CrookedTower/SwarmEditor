@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Swarm.Editor.ViewModels.Chat"
+             xmlns:converters="using:Swarm.Editor.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
+             x:Class="Swarm.Editor.Views.Chat.ChatView">
+
+    <Design.DataContext>
+        <vm:ChatViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2D2D2D" Padding="10">
+            <Grid>
+                <TextBlock Text="SWARM AI" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                         FontWeight="Bold" Foreground="#E0E0E0"/>
+                <Button Content="Clear" Command="{Binding ClearChatCommand}" 
+                      HorizontalAlignment="Right" 
+                      Classes="small accent"/>
+            </Grid>
+        </Border>
+
+        <!-- Chat Messages -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,5">
+            <ItemsControl ItemsSource="{Binding Messages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ChatMessageViewModel">
+                        <Border Margin="5,2" Padding="10" 
+                              Background="{Binding IsFromUser, Converter={StaticResource BoolToBackgroundConverter}}"
+                              CornerRadius="8"
+                              HorizontalAlignment="{Binding IsFromUser, Converter={StaticResource BoolToAlignmentConverter}}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" 
+                                         Foreground="#E0E0E0" Margin="0,0,0,3"/>
+                                <TextBlock Text="{Binding FormattedTime}" FontSize="10" 
+                                         Foreground="#A0A0A0" HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="#2D2D2D" Padding="5,3">
+            <TextBlock Text="{Binding StatusMessage}" Foreground="#B0B0B0" FontSize="11"/>
+        </Border>
+
+        <!-- Input Area -->
+        <Grid Grid.Row="3" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Text="{Binding InputText}" Watermark="Type a message..." 
+                   AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="100" 
+                   IsEnabled="{Binding !IsProcessing}" MinHeight="32"/>
+            
+            <Button Grid.Column="1" Content="Send" Margin="5,0,0,0"
+                  Command="{Binding SendMessageCommand}" VerticalAlignment="Bottom"
+                  Classes="accent" IsEnabled="{Binding !IsProcessing}"/>
+        </Grid>
+    </Grid>
+</UserControl> 

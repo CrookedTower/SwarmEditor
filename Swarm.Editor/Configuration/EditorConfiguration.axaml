@@ -2,7 +2,64 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit" 
         xmlns:editing="clr-namespace:AvaloniaEdit.Editing;assembly=AvaloniaEdit"
-        xmlns:rendering="clr-namespace:AvaloniaEdit.Rendering;assembly=AvaloniaEdit">
+        xmlns:rendering="clr-namespace:AvaloniaEdit.Rendering;assembly=AvaloniaEdit"
+        xmlns:behaviors="clr-namespace:Swarm.Editor.Behaviors">
+
+    <!-- Wrap ControlThemes and Resources in a Style without a selector -->
+    <Style>
+        <Style.Resources>
+            <!-- Custom ControlTheme for TabControl to enable horizontal scrolling -->
+            <ControlTheme x:Key="{x:Type TabControl}" TargetType="TabControl">
+                <!-- Apply base properties -->
+                <Setter Property="TabStripPlacement" Value="Top"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Background" Value="#2D2D30"/>
+                
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Background="{TemplateBinding Background}"
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                            <DockPanel>
+                                <ScrollViewer Name="PART_HeaderPanel"
+                                              DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                                              HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Disabled"
+                                              AllowAutoHide="False"
+                                              Background="#2D2D30"
+                                              Height="32"
+                                              MaxHeight="32"
+                                              Margin="0"
+                                              Padding="0"
+                                              behaviors:ScrollViewerBehaviors.EnableMiddleMouseScroll="True">
+                                    <!-- ItemsPresenter properties are set by the TabControl itself -->
+                                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                                </ScrollViewer>
+                                <ContentPresenter Name="PART_SelectedContentHost"
+                                                  Content="{TemplateBinding SelectedContent}"
+                                                  ContentTemplate="{TemplateBinding SelectedContentTemplate}"
+                                                  Margin="{TemplateBinding Padding}" />
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                
+                <!-- This ItemsPanel setter works in conjunction with the TemplateBinding in the ControlTemplate -->
+                <Setter Property="ItemsPanel">
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </Setter>
+            </ControlTheme>
+            <!-- Other Resources could go here if needed -->
+        </Style.Resources>
+    </Style>
+
     <!-- General App Styles -->
     <Style Selector="Window">
         <Setter Property="Background" Value="#1E1E1E"/>
@@ -58,39 +115,29 @@
     </Style>
 
     <!-- Tab Control Styles -->
-    <Style Selector="TabControl">
-        <Setter Property="TabStripPlacement" Value="Top"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="Background" Value="#2D2D30"/>
-    </Style>
-    <Style Selector="TabControl > ScrollViewer > TabStrip">
-        <Setter Property="Height" Value="32"/>
-        <Setter Property="MaxHeight" Value="32"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Background" Value="#2D2D30"/>
-    </Style>
+    
+    <!-- Custom ControlTheme for TabControl to enable horizontal scrolling -->
     <Style Selector="TabItem">
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Height" Value="28"/>
-        <Setter Property="MinHeight" Value="28"/>
         <Setter Property="MaxWidth" Value="175"/>
         <Setter Property="Width" Value="175"/>
         <Setter Property="MinWidth" Value="100"/>
         <Setter Property="Background" Value="#2D2D30"/>
         <Setter Property="Foreground" Value="#CCCCCC"/>
         <Setter Property="Margin" Value="0"/>
-        <Setter Property="Padding" Value="10 0 10 0"/>
+        <Setter Property="Padding" Value="10,5"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="behaviors:TabItemMiddleClickCloseBehavior.IsEnabled" Value="True"/>
     </Style>
+    
     <Style Selector="TabItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="0"/>
     </Style>
+
     <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
-        <Setter Property="Background" Value="#5D1A1A"/> <!-- Status Bar Color -->
+        <Setter Property="Background" Value="#5D1A1A"/>
         <Setter Property="Height" Value="2"/>
         <Setter Property="VerticalAlignment" Value="Bottom"/>
     </Style>
@@ -283,14 +330,40 @@
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
-    <!-- Ensure TabStrip ItemsPresenter uses a horizontal StackPanel -->
-    <!-- More specific selector targeting the template part -->
-    <Style Selector="TabStrip /template/ ItemsPresenter#PART_ItemsPresenter">
-        <Setter Property="ItemsPanel">
-            <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
-            </ItemsPanelTemplate>
-        </Setter>
+    <!-- REMOVE Style Selector="TabStrip /template/ ItemsPresenter#PART_ItemsPresenter" -->
+
+    <!-- Task 1 & 2: Refine styles for fixed-size scrollbar (4px height) and hide repeat buttons -->
+    <Style Selector="TabControl /template/ ScrollViewer#PART_HeaderPanel /template/ ScrollBar[Orientation=Horizontal]">
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="MinHeight" Value="4"/>
+        <Setter Property="Background" Value="Transparent"/> <!-- Make track transparent -->
+    </Style>
+    <Style Selector="TabControl /template/ ScrollViewer#PART_HeaderPanel /template/ ScrollBar[Orientation=Horizontal] /template/ Thumb#PART_Thumb">
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="MinHeight" Value="4"/>
+        <Setter Property="Background" Value="#444444"/> <!-- Base color -->
+        <Setter Property="CornerRadius" Value="2"/> <!-- Adjust corner radius for smaller height -->
+    </Style>
+    <Style Selector="TabControl /template/ ScrollViewer#PART_HeaderPanel /template/ ScrollBar[Orientation=Horizontal]:pointerover /template/ Thumb#PART_Thumb">
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="MinHeight" Value="4"/>
+        <Setter Property="Background" Value="#666666"/> <!-- Hover color -->
+        <Setter Property="CornerRadius" Value="2"/>
+    </Style>
+    <Style Selector="TabControl /template/ ScrollViewer#PART_HeaderPanel /template/ ScrollBar[Orientation=Horizontal]:pressed /template/ Thumb#PART_Thumb">
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="MinHeight" Value="4"/>
+        <Setter Property="Background" Value="#777777"/> <!-- Pressed color -->
+        <Setter Property="CornerRadius" Value="2"/>
+    </Style>
+    <!-- Hide the arrow buttons -->
+    <Style Selector="TabControl /template/ ScrollViewer#PART_HeaderPanel /template/ ScrollBar[Orientation=Horizontal] /template/ RepeatButton#PART_LineUpButton">
+        <Setter Property="IsVisible" Value="False"/>
+        <Setter Property="Width" Value="0"/>
+    </Style>
+    <Style Selector="TabControl /template/ ScrollViewer#PART_HeaderPanel /template/ ScrollBar[Orientation=Horizontal] /template/ RepeatButton#PART_LineDownButton">
+        <Setter Property="IsVisible" Value="False"/>
+        <Setter Property="Width" Value="0"/>
     </Style>
 
 </Styles> 

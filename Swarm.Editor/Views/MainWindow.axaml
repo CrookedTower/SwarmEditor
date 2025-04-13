@@ -77,9 +77,7 @@
             <TabControl Grid.Column="2"
                         ItemsSource="{Binding DocumentTabs}"
                         SelectedItem="{Binding ActiveDocument, Mode=TwoWay}"
-                        Padding="0" Margin="0"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        Padding="0" Margin="0">
                 <TabControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:DocumentTabViewModel}">
                         <DockPanel LastChildFill="True">

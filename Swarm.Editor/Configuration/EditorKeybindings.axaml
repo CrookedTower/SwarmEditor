@@ -1,0 +1,27 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+    Keybinding Configuration Documentation
+    ====================================
+    This file documents the intended actions and their default keybindings.
+    Actual implementation is currently defined elsewhere (see notes below).
+    -->
+
+    <Styles.Resources>
+        <!-- Define Gesture Strings -->
+        <x:String x:Key="Gesture.Tab.Close">MiddleClick</x:String>
+        <x:String x:Key="Gesture.File.Save">Ctrl+S</x:String>
+        <!-- Add other gesture definitions here -->
+    </Styles.Resources>
+
+    <!-- Action: Close Tab -->
+    <!-- Gesture Resource Key: Gesture.Tab.Close -->
+    <!-- Implementation: TabItemMiddleClickCloseBehavior applied via style in EditorConfiguration.axaml -->
+    <!-- Command: MainWindowViewModel.CloseTabCommand -->
+
+    <!-- Style for TabItem removed, InputBindings belong in the template instance -->
+
+    <!-- Other keybindings can be added here -->
+
+</Styles> 

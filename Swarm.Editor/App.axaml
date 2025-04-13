@@ -69,6 +69,7 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
-        <StyleInclude Source="avares://Swarm.Editor/Themes/DefaultTheme.axaml" />
+        <StyleInclude Source="avares://Swarm.Editor/Configuration/EditorConfiguration.axaml" />
+        <StyleInclude Source="avares://Swarm.Editor/Configuration/EditorKeybindings.axaml" />
     </Application.Styles>
 </Application> 

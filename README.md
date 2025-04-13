@@ -8,7 +8,7 @@ Swarm is a next-generation, cross-platform code editor and developer assistant p
   The main code editor application (UI, language services, file/project management).  
   Built on C#/.NET and Avalonia for true cross-platform support.
 
-- **Swarm.AI**  
+- **Swarm.Agents**  
   The orchestration layer for agentic workflows, LLM integration, and Swarm intelligence.  
   Manages multi-LLM collaboration, tool usage, and agentic task execution.
 

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Swarm.Editor.ViewModels.Panels;
 using Swarm.Shared.EventBus;
 using Swarm.Shared.EventBus.Events;
+using Swarm.Lsp.Services;
 
 namespace Swarm.Editor.ViewModels
 {
@@ -25,6 +26,7 @@ namespace Swarm.Editor.ViewModels
         private readonly IFileSystemService _fileSystemService;
         private readonly ILogger<MainWindowViewModel> _logger;
         private readonly IEventBus _eventBus;
+        private readonly ILspService _lspService;
         
         // View Models
         public CodeEditorViewModel EditorViewModel { get; }
@@ -123,20 +125,26 @@ namespace Swarm.Editor.ViewModels
             IApplicationService? applicationService = null, 
             IFileSystemService? fileSystemService = null,
             IEventBus? eventBus = null,
-            ILogger<MainWindowViewModel>? logger = null)
+            ILogger<MainWindowViewModel>? logger = null,
+            ILspService? lspService = null,
+            CodeEditorViewModel? editorViewModel = null
+            // LeftPanelViewModel? leftPanel = null, // TODO: Inject Panels via DI too?
+            // RightPanelViewModel? rightPanel = null // TODO: Inject Panels via DI too?
+            )
         {
             // Initialize services
             _applicationService = applicationService ?? new ApplicationService();
             _fileSystemService = fileSystemService ?? new FileSystemService();
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _logger = logger ?? NullLogger<MainWindowViewModel>.Instance;
+            _lspService = lspService ?? throw new ArgumentNullException(nameof(lspService));
             
             // Initialize view models
-            EditorViewModel = new CodeEditorViewModel();
+            EditorViewModel = editorViewModel ?? throw new ArgumentNullException(nameof(editorViewModel));
             
             // Instantiate Panel ViewModels, passing required services
             LeftPanelContent = new LeftPanelViewModel(_fileSystemService, _eventBus);
-            RightPanelContent = new RightPanelViewModel(); // Assuming RightPanelViewModel doesn't need services yet
+            RightPanelContent = new RightPanelViewModel();
             
             // Initialize active document to avoid CS8618 warning
             // Use a distinct initial empty object
@@ -261,82 +269,73 @@ namespace Swarm.Editor.ViewModels
         
         private async Task OpenFileAsync(string filePath)
         {
-            Debug.WriteLine($"[DEBUG][OpenFileAsync] Entered for: {filePath}");
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
-                Debug.WriteLine("[DEBUG][OpenFileAsync] filePath is null or empty, exiting.");
+                _logger.LogWarning("OpenFileAsync: Invalid or non-existent file path: {FilePath}", filePath);
                 return;
             }
 
+            _logger.LogInformation("OpenFileAsync: Opening file {FilePath}", filePath);
+
             try
             {
-                if (!_fileSystemService.FileExists(filePath))
-                {
-                    _logger.LogWarning("Attempted to open non-existent file: {FilePath}", filePath);
-                    Debug.WriteLine($"[DEBUG][OpenFileAsync] File does not exist: {filePath}");
-                    // Optionally show message to user
-                    return;
-                }
-                
-                Debug.WriteLine("[DEBUG][OpenFileAsync] File exists.");
-                var existingTab = DocumentTabs.FirstOrDefault(t => t.FilePath == filePath);
+                // Check if the file is already open
+                var existingTab = DocumentTabs.FirstOrDefault(tab => tab.FilePath == filePath);
                 if (existingTab != null)
                 {
-                    Debug.WriteLine($"[DEBUG][OpenFileAsync] Tab already exists for: {filePath}. Activating.");
-                    if (!ReferenceEquals(ActiveDocument, existingTab))
-                    {
-                         ActiveDocument = existingTab;
-                    }
-                    else
-                    {
-                        Debug.WriteLine("[DEBUG][OpenFileAsync] Tab is already active.");
-                    }
+                    _logger.LogInformation("OpenFileAsync: File already open, activating tab: {FilePath}", filePath);
+                    ActiveDocument = existingTab;
                     return;
-                }
-                
-                string? content = null;
-                try
-                {
-                    Debug.WriteLine($"[DEBUG][OpenFileAsync] Reading file content for: {filePath}");
-                    content = await _fileSystemService.ReadFileAsync(filePath);
-                    Debug.WriteLine($"[DEBUG][OpenFileAsync] Read content successfully. Length: {content?.Length ?? 0}");
-                }
-                catch(IOException ioEx)
-                {
-                     _logger.LogError(ioEx, "IO Error reading file {FilePath}", filePath);
-                     Debug.WriteLine($"[ERROR][OpenFileAsync] IO Error reading {filePath}: {ioEx.Message}");
-                     // Show error message to user
-                     return; 
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error reading file {FilePath}", filePath);
-                    Debug.WriteLine($"[ERROR][OpenFileAsync] Error reading {filePath}: {ex.Message}");
-                    // Optionally show error message to user
-                    return; // Don't proceed if file couldn't be read
                 }
 
-                if (content == null)
+                // Read file content
+                string content = await _fileSystemService.ReadFileAsync(filePath);
+                _logger.LogDebug("OpenFileAsync: Read {ContentLength} characters from {FilePath}", content.Length, filePath);
+                
+                // -------- BEGIN LSP INITIALIZATION --------
+                string? languageId = Path.GetExtension(filePath)?.ToLowerInvariant() switch
                 {
-                    _logger.LogWarning("ReadFileAsync returned null content for {FilePath}", filePath);
-                    Debug.WriteLine($"[ERROR][OpenFileAsync] Read content was null for {filePath}");
-                    // Optionally show error message
-                    return;
+                    ".cs" => "csharp",
+                    // TODO: Add mappings for other languages (e.g., .py -> python, .ts -> typescript)
+                    _ => null
+                };
+
+                if (!string.IsNullOrEmpty(languageId))
+                {
+                    try
+                    {
+                        _logger.LogInformation("Initializing LSP for {FilePath} ({LanguageId})", filePath, languageId);
+                        // Note: Pass content to initialize the server's view of the file
+                        await _lspService.InitializeForDocumentAsync(filePath, languageId, content);
+                        _logger.LogInformation("LSP initialized successfully for {FilePath}", filePath);
+                    }
+                    catch (Exception lspEx)
+                    {
+                        // Log the error but continue opening the file in the editor
+                        _logger.LogError(lspEx, "Error initializing LSP for {FilePath}", filePath);
+                        // TODO: Display a user-facing notification about LSP failure?
+                    }
                 }
-                
-                Debug.WriteLine("[DEBUG][OpenFileAsync] Creating new DocumentTabViewModel.");
-                var document = new DocumentTabViewModel(filePath, content);
-                
-                DocumentTabs.Add(document);
-                Debug.WriteLine($"[DEBUG][OpenFileAsync] Added new tab to DocumentTabs. Count: {DocumentTabs.Count}");
-                ActiveDocument = document;
-                Debug.WriteLine($"[DEBUG][OpenFileAsync] Set new tab as ActiveDocument: {document.DisplayName}");
+                else
+                {
+                    _logger.LogInformation("Skipping LSP initialization for unsupported file type: {FilePath}", filePath);
+                }
+                // -------- END LSP INITIALIZATION --------
+
+                // Create and add the new document tab
+                var newDocument = new DocumentTabViewModel(filePath, content)
+                {
+                    DisplayName = Path.GetFileName(filePath) ?? "Untitled"
+                };
+                DocumentTabs.Add(newDocument);
+                ActiveDocument = newDocument; // Make the new tab active
+
+                _logger.LogInformation("OpenFileAsync: Successfully opened and added tab for {FilePath}", filePath);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error in OpenFileAsync for {FilePath}", filePath);
-                Debug.WriteLine($"[ERROR][OpenFileAsync] Unexpected error opening {filePath}: {ex.Message}");
-                // Optionally show a generic error message to user
+                _logger.LogError(ex, "OpenFileAsync: Error opening file {FilePath}", filePath);
+                // TODO: Show error message to the user
             }
         }
         

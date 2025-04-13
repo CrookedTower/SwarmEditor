@@ -7,6 +7,8 @@ using Swarm.Lsp.Configuration;
 using Swarm.Lsp.ServerManagement;
 using Swarm.Lsp.Services;
 using Swarm.Editor.ViewModels;
+using Swarm.Editor.ViewModels.Panels;
+using Swarm.Shared.EventBus;
 
 namespace Swarm.Editor;
 
@@ -89,6 +91,7 @@ class Program
         services.AddSingleton<Swarm.Editor.ViewModels.Panels.ContentPanelViewModel>();
         services.AddSingleton<FileExplorerViewModel>();
         services.AddSingleton<Swarm.Editor.ViewModels.Chat.ChatViewModel>();
+        services.AddSingleton<CodeEditorViewModel>();
         services.AddSingleton<MainWindowViewModel>();
         
         Console.WriteLine("ConfigureServices: Service registration complete.");

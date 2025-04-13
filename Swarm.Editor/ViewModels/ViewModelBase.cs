@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
 
 namespace Swarm.Editor.ViewModels;
 
-public class ViewModelBase : ObservableObject
+public class ViewModelBase : ReactiveObject
 {
     // ViewModelBase can contain other common logic for view models if needed
 } 

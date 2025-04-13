@@ -3,12 +3,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using CommunityToolkit.Mvvm.Input;
-using Swarm.Editor.Common.Commands;
 using Swarm.Editor.Views;
 using Swarm.Editor.Models.Services;
 using Swarm.Shared.EventBus;
 using Swarm.Shared.EventBus.Events;
+using ReactiveUI;
+using System.Reactive;
 
 namespace Swarm.Editor.ViewModels
 {
@@ -22,7 +22,7 @@ namespace Swarm.Editor.ViewModels
         public ObservableCollection<FileSystemItemViewModel> RootItems
         {
             get => _rootItems;
-            private set => SetProperty(ref _rootItems, value);
+            private set => this.RaiseAndSetIfChanged(ref _rootItems, value);
         }
         
         // Selected item in the file tree
@@ -33,12 +33,12 @@ namespace Swarm.Editor.ViewModels
             set
             {
                 // Only set the property, logic moved to command
-                SetProperty(ref _selectedItem, value);
+                this.RaiseAndSetIfChanged(ref _selectedItem, value);
             }
         }
 
         // Command for opening files
-        public IAsyncRelayCommand<FileSystemItemViewModel?> OpenFileCommand { get; }
+        public ReactiveCommand<FileSystemItemViewModel?, Unit> OpenFileCommand { get; }
 
         // Constructor
         public FileExplorerViewModel(IFileSystemService fileSystemService, IEventBus eventBus)
@@ -48,20 +48,16 @@ namespace Swarm.Editor.ViewModels
             
             _eventBus.Subscribe<FolderSelectedEvent>(HandleFolderSelected);
             
+            // Define CanExecute observable based on SelectedItem
+            var canOpenFile = this.WhenAnyValue(x => x.SelectedItem,
+                                                 (item) => item != null && !item.IsDirectory);
+
             // Initialize the command
-            OpenFileCommand = new AsyncRelayCommand<FileSystemItemViewModel?>(ExecuteOpenFileAsync, CanOpenFile);
+            OpenFileCommand = ReactiveCommand.CreateFromTask<FileSystemItemViewModel?>(ExecuteOpenFileAsync, canOpenFile);
 
             Debug.WriteLine("[DEBUG][FileExplorerViewModel] Initialized and subscribed to FolderSelectedEvent.");
         }
         
-        // CanExecute logic for the command
-        private bool CanOpenFile(FileSystemItemViewModel? item)
-        {
-            bool canOpen = item != null && !item.IsDirectory;
-            Debug.WriteLine($"[DEBUG][FileExplorerViewModel] CanOpenFile called for '{item?.Name ?? "null"}'. Result: {canOpen}");
-            return canOpen;
-        }
-
         // Execute logic for the command
         private async Task ExecuteOpenFileAsync(FileSystemItemViewModel? item)
         {

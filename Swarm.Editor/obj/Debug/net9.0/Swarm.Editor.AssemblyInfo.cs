@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Swarm.Editor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57daf9f97b6d0b274c79abfcfe11ef2cf12bae2f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db36fcc9069c3192f85f033933ad1f9ddea982c6")]
 [assembly: System.Reflection.AssemblyProductAttribute("Swarm.Editor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Swarm.Editor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

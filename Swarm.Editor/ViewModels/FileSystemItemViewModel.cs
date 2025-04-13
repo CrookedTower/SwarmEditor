@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ReactiveUI;
 using Swarm.Editor.Common.Commands;
 using Swarm.Editor.Views;
 using Swarm.Editor.Models.Services;
@@ -64,7 +65,7 @@ namespace Swarm.Editor.ViewModels
             get => _isExpanded;
             set
             {
-                if (SetProperty(ref _isExpanded, value) && value && IsDirectory)
+                if (this.RaiseAndSetIfChanged(ref _isExpanded, value) && value && IsDirectory)
                 {
                     // When expanded, load children
                     _ = ExpandDirectoryAsync();
@@ -75,7 +76,7 @@ namespace Swarm.Editor.ViewModels
         public bool IsLoading
         {
             get => _isLoading;
-            private set => SetProperty(ref _isLoading, value);
+            private set => this.RaiseAndSetIfChanged(ref _isLoading, value);
         }
 
         // Method to expand a directory and load its children

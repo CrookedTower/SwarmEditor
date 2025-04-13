@@ -1,4 +1,5 @@
 using System.IO;
+using ReactiveUI;
 using Swarm.Editor.ViewModels;
 
 namespace Swarm.Editor.ViewModels
@@ -15,7 +16,7 @@ namespace Swarm.Editor.ViewModels
         public string FilePath
         {
             get => _filePath;
-            set => SetProperty(ref _filePath, value ?? string.Empty);
+            set => this.RaiseAndSetIfChanged(ref _filePath, value ?? string.Empty);
         }
 
         public string Content
@@ -23,35 +24,39 @@ namespace Swarm.Editor.ViewModels
             get => _content;
             set
             {
-                if (SetProperty(ref _content, value))
-                {
-                    IsModified = true;
-                }
+                this.RaiseAndSetIfChanged(ref _content, value ?? string.Empty);
+                IsModified = true;
+                this.RaisePropertyChanged(nameof(TabTitle));
             }
         }
 
         public string DisplayName
         {
             get => _displayName;
-            set 
-            { 
-                if (SetProperty(ref _displayName, value))
-                {
-                    _hasCustomDisplayName = true;
-                }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _displayName, value ?? string.Empty);
+                _hasCustomDisplayName = true;
+                this.RaisePropertyChanged(nameof(TabTitle));
             }
         }
 
         public bool IsModified
         {
             get => _isModified;
-            set => SetProperty(ref _isModified, value);
+            set
+            {
+                if (this.RaiseAndSetIfChanged(ref _isModified, value))
+                {
+                    this.RaisePropertyChanged(nameof(TabTitle));
+                }
+            }
         }
 
         public bool IsActive
         {
             get => _isActive;
-            set => SetProperty(ref _isActive, value);
+            set => this.RaiseAndSetIfChanged(ref _isActive, value);
         }
 
         public string TabTitle => IsModified ? DisplayName + "*" : DisplayName;

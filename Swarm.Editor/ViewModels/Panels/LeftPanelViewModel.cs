@@ -1,7 +1,8 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+// using CommunityToolkit.Mvvm.ComponentModel; // Remove this
 using Swarm.Editor.Models.Services;
 using Swarm.Shared.EventBus;
-using Swarm.Editor.ViewModels; // Assuming FileExplorerViewModel is here
+using Swarm.Editor.ViewModels; 
+using ReactiveUI; // Add this
 
 namespace Swarm.Editor.ViewModels.Panels;
 
@@ -9,7 +10,8 @@ namespace Swarm.Editor.ViewModels.Panels;
 /// ViewModel for the content displayed in the left panel/dock.
 /// This will typically be the File Explorer.
 /// </summary>
-public partial class LeftPanelViewModel : ObservableObject
+// public partial class LeftPanelViewModel : ObservableObject // Change this
+public class LeftPanelViewModel : ViewModelBase // Use ViewModelBase
 {
     // Expose the specific ViewModel needed by the View
     public FileExplorerViewModel FileExplorer { get; }
@@ -26,6 +28,7 @@ public partial class LeftPanelViewModel : ObservableObject
     }
     
     // Parameterless constructor for XAML previewer/design-time support (optional)
+    // NOTE: Design-time data context might need adjustment if ViewModelBase changes affect it.
     public LeftPanelViewModel() : this(new FileSystemService(), new InMemoryEventBus()) 
     {
         // Design-time instantiation - requires parameterless constructors for services

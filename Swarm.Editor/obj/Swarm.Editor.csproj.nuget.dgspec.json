@@ -4,21 +4,21 @@
     "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor\\Swarm.Editor.csproj": {}
   },
   "projects": {
-    "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj": {
+    "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj": {
       "version": "11.0.6",
       "restore": {
-        "projectUniqueName": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj",
+        "projectUniqueName": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj",
         "projectName": "AvaloniaEdit.TextMate",
-        "projectPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj",
+        "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj",
         "packagesPath": "C:\\Users\\Crow\\.nuget\\packages\\",
-        "outputPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\obj\\",
+        "outputPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\NuGet.Config",
+          "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\NuGet.Config",
           "C:\\Users\\Crow\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -295,25 +295,17 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj": {
-                "projectPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj"
+              "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj": {
+                "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit.TextMate\\AvaloniaEdit.TextMate.csproj"
               },
               "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit\\AvaloniaEdit.csproj": {
                 "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Editor.Libraries\\AvaloniaEdit\\src\\AvaloniaEdit\\AvaloniaEdit.csproj"
               },
-<<<<<<< HEAD
               "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj": {
                 "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj"
               },
               "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj": {
                 "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj"
-=======
-              "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj": {
-                "projectPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj"
-              },
-              "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj": {
-                "projectPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj"
->>>>>>> 4823c99bbf007d04507f3bad187338c25e51410a
               }
             }
           }
@@ -336,31 +328,31 @@
           "dependencies": {
             "Avalonia": {
               "target": "Package",
-              "version": "[11.2.6, )"
+              "version": "[11.2.7, )"
             },
             "Avalonia.Desktop": {
               "target": "Package",
-              "version": "[11.2.6, )"
+              "version": "[11.2.7, )"
             },
             "Avalonia.Diagnostics": {
               "target": "Package",
-              "version": "[11.2.6, )"
+              "version": "[11.2.7, )"
             },
             "Avalonia.Fonts.Inter": {
               "target": "Package",
-              "version": "[11.2.6, )"
+              "version": "[11.2.7, )"
+            },
+            "Avalonia.ReactiveUI": {
+              "target": "Package",
+              "version": "[11.2.7, )"
             },
             "Avalonia.Themes.Fluent": {
               "target": "Package",
-              "version": "[11.2.6, )"
+              "version": "[11.2.7, )"
             },
             "Avalonia.Xaml.Behaviors": {
               "target": "Package",
               "version": "[11.0.10.9, )"
-            },
-            "CommunityToolkit.Mvvm": {
-              "target": "Package",
-              "version": "[8.2.2, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
@@ -377,7 +369,6 @@
             "Microsoft.Extensions.Logging.Debug": {
               "target": "Package",
               "version": "[9.0.4, )"
-<<<<<<< HEAD
             }
           },
           "imports": [
@@ -454,8 +445,6 @@
             "OmniSharp.Extensions.LanguageClient": {
               "target": "Package",
               "version": "[0.19.9, )"
-=======
->>>>>>> 4823c99bbf007d04507f3bad187338c25e51410a
             }
           },
           "imports": [
@@ -478,90 +467,14 @@
         }
       }
     },
-    "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj": {
+    "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj",
-        "projectName": "Swarm.Lsp",
-        "projectPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\Swarm.Lsp.csproj",
-        "packagesPath": "C:\\Users\\Crow\\.nuget\\packages\\",
-        "outputPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Lsp\\obj\\",
-        "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
-        "configFilePaths": [
-          "C:\\Users\\Crow\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "net9.0"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net9.0": {
-            "targetAlias": "net9.0",
-            "projectReferences": {}
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
-      },
-      "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
-          "dependencies": {
-            "Microsoft.Extensions.Logging.Console": {
-              "target": "Package",
-              "version": "[9.0.4, )"
-            },
-            "OmniSharp.Extensions.LanguageClient": {
-              "target": "Package",
-              "version": "[0.19.9, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj",
+        "projectUniqueName": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj",
         "projectName": "Swarm.Shared",
-        "projectPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj",
+        "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj",
         "packagesPath": "C:\\Users\\Crow\\.nuget\\packages\\",
-        "outputPath": "c:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\obj\\",
+        "outputPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

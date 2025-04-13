@@ -4,45 +4,37 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
 using Swarm.Editor.Models.Chat;
 using System.Linq;
-using Swarm.Editor.Common.Commands;
 using Swarm.Shared.EventBus;
 using Swarm.Shared.EventBus.Events;
 
 namespace Swarm.Editor.ViewModels.Chat
 {
     /// <summary>
-    /// ViewModel representing a single message in the chat.
-    /// </summary>
-    public partial class ChatMessageViewModel : ObservableObject
-    {
-        [ObservableProperty]
-        private string? _sender;
-
-        [ObservableProperty]
-        private string? _text;
-
-        [ObservableProperty]
-        private bool _isUserMessage;
-    }
-
-    /// <summary>
     /// ViewModel for the Chat Panel.
     /// </summary>
-    public partial class ChatViewModel : ObservableObject
+    public class ChatViewModel : ViewModelBase
     {
         private readonly ILogger<ChatViewModel> _logger;
         private readonly IEventBus _eventBus;
 
-        [ObservableProperty]
         private ObservableCollection<ChatMessageViewModel> _messages = new();
+        public ObservableCollection<ChatMessageViewModel> Messages
+        {
+            get => _messages;
+            set => this.RaiseAndSetIfChanged(ref _messages, value ?? new ObservableCollection<ChatMessageViewModel>());
+        }
 
-        [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(SendMessageCommand))]
         private string? _currentMessage;
+        public string? CurrentMessage
+        {
+            get => _currentMessage;
+            set => this.RaiseAndSetIfChanged(ref _currentMessage, value);
+        }
+
+        public ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> SendMessageCommand { get; }
 
         public ChatViewModel(IEventBus eventBus, ILogger<ChatViewModel> logger)
         {
@@ -52,26 +44,38 @@ namespace Swarm.Editor.ViewModels.Chat
             _logger.LogInformation("ChatViewModel initialized.");
 
             // Add sample messages for design time or initial state
-            Messages.Add(new ChatMessageViewModel { Sender = "Agent", Text = "Hello! How can I assist you today?", IsUserMessage = false });
+            Messages.Add(new ChatMessageViewModel("Hello! How can I assist you today?", false));
+
+            var canSendMessage = this.WhenAnyValue(x => x.CurrentMessage, 
+                                                 (msg) => !string.IsNullOrWhiteSpace(msg));
+
+            SendMessageCommand = ReactiveCommand.CreateFromTask(SendMessageAsync, canSendMessage);
         }
 
-        private bool CanSendMessage() => !string.IsNullOrWhiteSpace(CurrentMessage);
-
-        [RelayCommand(CanExecute = nameof(CanSendMessage))]
-        private async Task SendMessage()
+        private async Task SendMessageAsync()
         {
-            // Redundant check due to CanExecute, but good practice
-            if (!CanSendMessage() || CurrentMessage == null) return;
+            if (string.IsNullOrWhiteSpace(CurrentMessage))
+            {
+                _logger.LogWarning("SendMessageAsync called with null or whitespace message.");
+                return;
+            }
+            
+            string messageToSend = CurrentMessage;
+            CurrentMessage = string.Empty;
 
-            _logger.LogInformation($"Send button clicked. Message: {CurrentMessage}");
-            var userMessage = new ChatMessageViewModel { Sender = "User", Text = CurrentMessage, IsUserMessage = true };
+            _logger.LogInformation($"Sending message: {messageToSend}");
+            var userMessage = new ChatMessageViewModel(messageToSend, true);
             Messages.Add(userMessage);
 
-            // Publish the event using the shared event bus
-            await _eventBus.PublishAsync(new ChatMessageSentEvent(CurrentMessage));
-            _logger.LogInformation($"Published ChatMessageSentEvent for: {CurrentMessage}");
-
-            CurrentMessage = string.Empty; // Clear the input box
+            try
+            {
+                await _eventBus.PublishAsync(new ChatMessageSentEvent(messageToSend));
+                _logger.LogInformation($"Published ChatMessageSentEvent for: {messageToSend}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error publishing ChatMessageSentEvent for: {Message}", messageToSend);
+            }
         }
 
         // NOTE: Methods related to receiving agent responses (HandlePromptResponseEvent, etc.)

@@ -16,6 +16,7 @@ using Swarm.Editor.ViewModels.Panels;
 using Swarm.Shared.EventBus;
 using Swarm.Shared.EventBus.Events;
 using Swarm.Lsp.Services;
+using ReactiveUI;
 
 namespace Swarm.Editor.ViewModels
 {
@@ -36,14 +37,14 @@ namespace Swarm.Editor.ViewModels
         public LeftPanelViewModel? LeftPanelContent
         {
             get => _leftPanelContent;
-            private set => SetProperty(ref _leftPanelContent, value);
+            private set => this.RaiseAndSetIfChanged(ref _leftPanelContent, value);
         }
 
         private RightPanelViewModel? _rightPanelContent;
         public RightPanelViewModel? RightPanelContent
         {
             get => _rightPanelContent;
-            private set => SetProperty(ref _rightPanelContent, value);
+            private set => this.RaiseAndSetIfChanged(ref _rightPanelContent, value);
         }
 
         // Document tabs
@@ -51,7 +52,7 @@ namespace Swarm.Editor.ViewModels
         public ObservableCollection<DocumentTabViewModel> DocumentTabs
         {
             get => _documentTabs;
-            private set => SetProperty(ref _documentTabs, value);
+            private set => this.RaiseAndSetIfChanged(ref _documentTabs, value);
         }
         
         private DocumentTabViewModel _activeDocument;
@@ -80,20 +81,15 @@ namespace Swarm.Editor.ViewModels
                         Debug.WriteLine("[DEBUG][ActiveDocument Set] Skipping save for outgoing document (null or initial empty).");
                     }
 
-                    // Use SetProperty to handle backing field update and notification
-                    if (SetProperty(ref _activeDocument, newValue))
-                    {
-                        Debug.WriteLine("[DEBUG][ActiveDocument Set] SetProperty succeeded. Loading new content.");
-                        // Update editor with the incoming tab's content *after* property change notification
-                        EditorViewModel.Text = _activeDocument.Content ?? string.Empty;
-                        CurrentFilePath = _activeDocument.FilePath ?? string.Empty;
-                        _activeDocument.IsActive = true;
-                        Debug.WriteLine($"[DEBUG][ActiveDocument Set] New content loaded for '{_activeDocument.DisplayName}'. Editor Text Length: {EditorViewModel.Text?.Length ?? 0}");
-                    }
-                    else
-                    {
-                         Debug.WriteLine("[DEBUG][ActiveDocument Set] SetProperty returned false (value might be the same reference after all?).");
-                    }
+                    // Use RaiseAndSetIfChanged - it handles the check internally and returns the set value (TRet)
+                    this.RaiseAndSetIfChanged(ref _activeDocument, newValue); // Correct usage
+                    // Actions after setting:
+                    Debug.WriteLine("[DEBUG][ActiveDocument Set] RaiseAndSetIfChanged called. Loading new content.");
+                    // Update editor with the incoming tab's content *after* property change notification
+                    EditorViewModel.Text = _activeDocument?.Content ?? string.Empty; // Use null-conditional access
+                    CurrentFilePath = _activeDocument?.FilePath ?? string.Empty; // Use null-conditional access
+                    if (_activeDocument != null) _activeDocument.IsActive = true; // Check for null before setting IsActive
+                    Debug.WriteLine($"[DEBUG][ActiveDocument Set] New content loaded for '{_activeDocument?.DisplayName ?? "null"}'. Editor Text Length: {EditorViewModel.Text?.Length ?? 0}");
                 }
                 else
                 {
@@ -117,7 +113,7 @@ namespace Swarm.Editor.ViewModels
         public string CurrentFilePath
         {
             get => _currentFilePath;
-            private set => SetProperty(ref _currentFilePath, value ?? string.Empty);
+            private set => this.RaiseAndSetIfChanged(ref _currentFilePath, value ?? string.Empty);
         }
         
         // Constructor

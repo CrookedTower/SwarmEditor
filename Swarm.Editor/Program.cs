@@ -9,6 +9,7 @@ using Swarm.Lsp.Services;
 using Swarm.Editor.ViewModels;
 using Swarm.Editor.ViewModels.Panels;
 using Swarm.Shared.EventBus;
+using Avalonia.ReactiveUI;
 
 namespace Swarm.Editor;
 
@@ -64,7 +65,8 @@ class Program
         Console.WriteLine("BuildAvaloniaApp: Configuring AppBuilder...");
         return AppBuilder.Configure(() => new App(serviceProvider))
             .UsePlatformDetect()
-            .LogToTrace();
+            .LogToTrace()
+            .UseReactiveUI();
     }
 
     // Service Configuration

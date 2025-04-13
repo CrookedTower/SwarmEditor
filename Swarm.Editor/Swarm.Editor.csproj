@@ -15,11 +15,12 @@
 
   <ItemGroup>
     <!-- Avalonia Core -->
-    <PackageReference Include="Avalonia" Version="11.2.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.6" />
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.6" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.6" />
+    <PackageReference Include="Avalonia" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.7" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.7" />
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.10.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
 
@@ -32,7 +33,6 @@
     </ProjectReference>
 
     <!-- Add MVVM Toolkit -->
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     
     <!-- Add Logging -->
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />

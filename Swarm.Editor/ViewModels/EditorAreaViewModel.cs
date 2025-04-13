@@ -1,38 +1,52 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks; // Assuming file operations might be async
+using System.Threading.Tasks;
+using ReactiveUI;
+using System;
+using System.Windows.Input;
 
 namespace Swarm.Editor.ViewModels
 {
-    public partial class EditorAreaViewModel : ObservableObject
+    public class EditorAreaViewModel : ViewModelBase
     {
-        [ObservableProperty]
         private ObservableCollection<DocumentViewModel> _documents;
+        public ObservableCollection<DocumentViewModel> Documents
+        {
+            get => _documents;
+            set => this.RaiseAndSetIfChanged(ref _documents, value ?? new ObservableCollection<DocumentViewModel>());
+        }
 
-        [ObservableProperty]
         private DocumentViewModel? _activeDocument;
+        public DocumentViewModel? ActiveDocument
+        {
+            get => _activeDocument;
+            set => this.RaiseAndSetIfChanged(ref _activeDocument, value);
+        }
+
+        public ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> AddNewDocumentCommand { get; }
+        public ReactiveCommand<string, System.Reactive.Unit> OpenDocumentCommand { get; }
+        public ReactiveCommand<DocumentViewModel?, System.Reactive.Unit> CloseDocumentCommand { get; }
 
         public EditorAreaViewModel()
         {
-            Documents = new ObservableCollection<DocumentViewModel>();
-            // Add a default empty document or load previously opened files
-            AddNewDocument(); 
+            _documents = new ObservableCollection<DocumentViewModel>();
+
+            AddNewDocumentCommand = ReactiveCommand.Create(AddNewDocumentInternal);
+            OpenDocumentCommand = ReactiveCommand.CreateFromTask<string>(OpenDocumentInternalAsync); 
+            CloseDocumentCommand = ReactiveCommand.Create<DocumentViewModel?>(CloseDocumentInternal); 
+
+            AddNewDocumentInternal(); 
         }
 
-        [RelayCommand]
-        private void AddNewDocument()
+        private void AddNewDocumentInternal()
         {
             var newDoc = new DocumentViewModel();
             Documents.Add(newDoc);
             ActiveDocument = newDoc;
         }
 
-        [RelayCommand]
-        private async Task OpenDocument(string filePath)
+        private async Task OpenDocumentInternalAsync(string filePath)
         {
-            // Check if already open
             var existingDoc = Documents.FirstOrDefault(d => d.FilePath == filePath);
             if (existingDoc != null)
             {
@@ -40,26 +54,21 @@ namespace Swarm.Editor.ViewModels
                 return;
             }
 
-            // TODO: Replace with actual async file reading service/logic
-            await Task.Delay(10); // Placeholder for async read
-            string content = $"Content of {filePath}"; // Replace with actual file content
+            await Task.Delay(10);
+            string content = $"Content of {filePath}";
             
             var doc = new DocumentViewModel(filePath);
-            doc.Content = content; // Set content after construction
             Documents.Add(doc);
             ActiveDocument = doc;
         }
 
-        [RelayCommand]
-        private void CloseDocument(DocumentViewModel? documentToClose)
+        private void CloseDocumentInternal(DocumentViewModel? documentToClose)
         {
             var doc = documentToClose ?? ActiveDocument;
             if (doc != null)
             {
-                 // TODO: Add check for IsDirty and prompt to save
-                 
                 Documents.Remove(doc);
-                ActiveDocument = Documents.FirstOrDefault(); // Select next available or null
+                ActiveDocument = Documents.FirstOrDefault();
             }
         }
 

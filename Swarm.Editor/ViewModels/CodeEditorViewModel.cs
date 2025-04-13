@@ -1,28 +1,35 @@
 using System;
 using AvaloniaEdit.Document;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Swarm.Editor.ViewModels;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Swarm.Lsp.Services;
+using ReactiveUI;
 
 namespace Swarm.Editor.ViewModels
 {
-    public partial class CodeEditorViewModel : ViewModelBase
+    public class CodeEditorViewModel : ViewModelBase
     {
+        private readonly ILogger<CodeEditorViewModel> _logger;
+
         private TextDocument _document = new TextDocument();
         public TextDocument Document
         {
             get => _document;
-            set => SetProperty(ref _document, value);
+            set => this.RaiseAndSetIfChanged(ref _document, value);
         }
 
+        private string _text = string.Empty;
         public string Text
         {
-            get => Document.Text;
+            get => _text;
             set
             {
-                if (Document.Text != value)
-                {
-                    Document.Text = value ?? string.Empty;
-                    OnPropertyChanged(); // Notify that Text has changed
+                this.RaiseAndSetIfChanged(ref _text, value ?? string.Empty);
+                
+                if (Document.Text != _text) 
+                { 
+                    Document.Text = _text;
                 }
             }
         }
@@ -31,16 +38,21 @@ namespace Swarm.Editor.ViewModels
         public bool IsReadOnly
         {
             get => _isReadOnly;
-            set => SetProperty(ref _isReadOnly, value);
+            set => this.RaiseAndSetIfChanged(ref _isReadOnly, value);
         }
 
         // Constructor
-        public CodeEditorViewModel()
+        public CodeEditorViewModel(ILogger<CodeEditorViewModel>? logger = null)
         {
+            _logger = logger ?? NullLogger<CodeEditorViewModel>.Instance;
+            _logger.LogInformation("CodeEditorViewModel initialized.");
+
             // Initialize Document with empty text or load from a file if needed
             _document.Text = string.Empty;
             _isReadOnly = false; // Default to editable
         }
+
+        public event EventHandler<DocumentChangedEventArgs>? DocumentChanged;
 
         // Add other editor-related properties/commands if needed
     }

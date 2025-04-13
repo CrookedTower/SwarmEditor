@@ -24,7 +24,7 @@ build_property.EnableCodeStyleSeverity =
 [C:/Dev/Projects/Swarm/Public/Swarm.Editor/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Styles/CommonStyles.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Themes/DefaultTheme.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/Chat/ChatPanel.axaml]

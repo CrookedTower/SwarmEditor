@@ -14,7 +14,7 @@ Swarm is a next-generation, cross-platform code editor and developer assistant p
 - **Swarm.Hivemind**  
   Persistent, real-time structural, semantic, and temporal context to the Swarm.
 
-- **Swarm.Plugin**  
+- **Swarm.Plugins**  
   The plugin and extension system.  
 
 - **Swarm.Shared**  

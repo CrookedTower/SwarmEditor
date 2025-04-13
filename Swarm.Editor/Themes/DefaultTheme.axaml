@@ -283,4 +283,14 @@
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
+    <!-- Ensure TabStrip ItemsPresenter uses a horizontal StackPanel -->
+    <!-- More specific selector targeting the template part -->
+    <Style Selector="TabStrip /template/ ItemsPresenter#PART_ItemsPresenter">
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </Setter>
+    </Style>
+
 </Styles> 

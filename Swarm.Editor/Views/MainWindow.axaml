@@ -23,41 +23,6 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Window.Styles>
-        <!-- Styles specific to MainWindow elements -->
-
-        <!-- Start: Status Bar Styles -->
-        <Style Selector="Border.statusBar">
-            <Setter Property="BorderThickness" Value="0,1,0,0"/>
-            <Setter Property="BorderBrush" Value="#5D1A1A"/>
-            <Setter Property="Background" Value="#5D1A1A"/>
-            <Setter Property="Height" Value="22"/>
-        </Style>
-        
-        <Style Selector="TextBlock.statusText">
-            <Setter Property="Margin" Value="5,2,5,2"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-        <!-- End: Status Bar Styles -->
-
-        <!-- Start: Layout Styles (Specific to MainWindow) -->
-        <Style Selector="Border.swarmPanel">
-            <Setter Property="BorderThickness" Value="1,0,0,0"/>
-            <Setter Property="BorderBrush" Value="#3F3F46"/>
-            <Setter Property="Background" Value="#252526"/>
-        </Style>
-        
-        <!-- 
-        <Style Selector="Grid.editorGrid">
-            <Setter Property="Background" Value="#1E1E1E"/>
-        </Style>
-        -->
-        <!-- End: Layout Styles -->
-
-    </Window.Styles>
-
     <DockPanel>
         <!-- Menu remains at the top -->
         <Menu DockPanel.Dock="Top">
@@ -106,9 +71,9 @@
             </Border>
             
             <!-- Splitter 1 -->
-            <GridSplitter Grid.Column="1" Width="1" Background="Transparent" Margin="-6,0,0,0" />
+            <GridSplitter Grid.Column="1" Margin="-6,0,0,0" />
             
-            <!-- Center Content Panel - Replaced ContentControl with TabControl -->
+            <!-- Center Content Panel -->
             <TabControl Grid.Column="2"
                         ItemsSource="{Binding DocumentTabs}"
                         SelectedItem="{Binding ActiveDocument, Mode=TwoWay}"
@@ -119,10 +84,9 @@
                             <Button Content="X" 
                                     Command="{Binding $parent[TabControl].DataContext.CloseTabCommand}" 
                                     CommandParameter="{Binding}"
-                                    Padding="3,0" Margin="5,0,0,0" FontSize="10"
-                                    Background="Transparent" BorderThickness="0" Foreground="#CCCCCC"
+                                    Classes="closeTab" 
                                     DockPanel.Dock="Right" />
-                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding DisplayName}" Classes="tabItemText"/>
                         </DockPanel>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
@@ -133,9 +97,15 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
+            <Button Grid.Column="2" 
+                    Content="+" 
+                    Classes="addTabButton" 
+                    Command="{Binding NewFileCommand}" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top"/>
             
             <!-- Splitter 2 -->
-            <GridSplitter Grid.Column="3" Width="1" Background="Transparent" Margin="0,0,-6,0" ZIndex="1" />
+            <GridSplitter Grid.Column="3" Margin="0,0,-6,0" ZIndex="1" />
             
             <!-- Swarm Panel - Remove explicit Background -->
             <Border Grid.Column="4" Classes="swarmPanel"> 

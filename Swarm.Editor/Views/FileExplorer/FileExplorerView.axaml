@@ -9,27 +9,16 @@
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="Swarm.Editor.Views.FileExplorer.FileExplorerView">
 
-    <Border Background="#252526" 
-            BorderBrush="#3F3F46" 
-            BorderThickness="0">
+    <Border Classes="fileExplorerRoot">
         <DockPanel LastChildFill="True">
             <!-- Explorer header -->
-            <Border DockPanel.Dock="Top" 
-                    Background="#333337" 
-                    BorderThickness="0,0,0,1" 
-                    BorderBrush="#3F3F46" 
-                    Height="30">
-                <TextBlock Text="EXPLORER" 
-                           Foreground="#E8E8E8" 
-                           VerticalAlignment="Center" 
-                           Margin="10,0,0,0"
-                           FontSize="12"/>
+            <Border DockPanel.Dock="Top" Classes="fileExplorerHeader">
+                <TextBlock Text="EXPLORER" Classes="fileExplorerHeaderTitle"/>
             </Border>
             
             <!-- TreeView for files and folders -->
             <TreeView ItemsSource="{Binding RootItems}" 
-                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                      Background="Transparent">
+                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal" Spacing="5" Margin="-4,0,0,0">
@@ -41,7 +30,7 @@
                             </i:Interaction.Behaviors>
                             <!-- Show different icon for files vs folders -->
                             <TextBlock Text="{Binding IsDirectory, Converter={StaticResource BoolToFolderIconConverter}}"
-                                       FontSize="10" />
+                                       Classes="fileExplorerIcon" />
                             <TextBlock Text="{Binding Name}" />
                         </StackPanel>
                     </TreeDataTemplate>

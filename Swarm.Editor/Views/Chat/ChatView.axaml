@@ -20,10 +20,9 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Background="#2D2D2D" Padding="10">
+        <Border Grid.Row="0" Classes="chatViewHeader">
             <Grid>
-                <TextBlock Text="SWARM AI" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                         FontWeight="Bold" Foreground="#E0E0E0"/>
+                <TextBlock Text="SWARM AI" Classes="chatViewHeaderTitle"/>
                 <Button Content="Clear" Command="{Binding ClearChatCommand}" 
                       HorizontalAlignment="Right" 
                       Classes="small accent"/>
@@ -35,15 +34,15 @@
             <ItemsControl ItemsSource="{Binding Messages}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:ChatMessageViewModel">
-                        <Border Margin="5,2" Padding="10" 
+                        <Border Classes="chatViewMessage" 
                               Background="{Binding IsFromUser, Converter={StaticResource BoolToBackgroundConverter}}"
                               CornerRadius="8"
                               HorizontalAlignment="{Binding IsFromUser, Converter={StaticResource BoolToAlignmentConverter}}">
                             <StackPanel>
-                                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" 
-                                         Foreground="#E0E0E0" Margin="0,0,0,3"/>
-                                <TextBlock Text="{Binding FormattedTime}" FontSize="10" 
-                                         Foreground="#A0A0A0" HorizontalAlignment="Right"/>
+                                <TextBlock Text="{Binding Message}" Classes="chatViewMessageText" TextWrapping="Wrap" 
+                                         Margin="0,0,0,3"/>
+                                <TextBlock Text="{Binding FormattedTime}" Classes="chatViewTimestamp" FontSize="10" 
+                                         HorizontalAlignment="Right"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -52,8 +51,8 @@
         </ScrollViewer>
 
         <!-- Status Bar -->
-        <Border Grid.Row="2" Background="#2D2D2D" Padding="5,3">
-            <TextBlock Text="{Binding StatusMessage}" Foreground="#B0B0B0" FontSize="11"/>
+        <Border Grid.Row="2" Classes="chatViewStatusBar">
+            <TextBlock Text="{Binding StatusMessage}" Classes="chatViewStatusText" FontSize="11"/>
         </Border>
 
         <!-- Input Area -->
@@ -69,7 +68,7 @@
             
             <Button Grid.Column="1" Content="Send" Margin="5,0,0,0"
                   Command="{Binding SendMessageCommand}" VerticalAlignment="Bottom"
-                  Classes="accent" IsEnabled="{Binding !IsProcessing}"/>
+                  Classes="chatButton accent" IsEnabled="{Binding !IsProcessing}"/>
         </Grid>
     </Grid>
 </UserControl> 

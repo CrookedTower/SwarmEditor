@@ -10,7 +10,6 @@
 
     <!-- Use AvaloniaEdit's TextEditor instead of TextBox for better code editing features -->
     <avaloniaEdit:TextEditor x:Name="Editor"
-                           Background="Transparent"
                            FontFamily="Cascadia Code,Menlo,monospace"
                            FontSize="14"
                            ShowLineNumbers="True"

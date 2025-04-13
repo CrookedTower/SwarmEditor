@@ -145,3 +145,6 @@ C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\refint\Avalonia\Swarm
 C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\Swarm.Ed.4AAB4548.Up2Date
 C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\Swarm.Editor.genruntimeconfig.cache
 C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\ref\Swarm.Editor.dll
+C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\Swarm.Editor.dll
+C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\refint\Swarm.Editor.dll
+C:\Dev\Projects\Swarm\Public\Swarm.Editor\obj\Debug\net9.0\Swarm.Editor.pdb

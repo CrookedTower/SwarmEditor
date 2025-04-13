@@ -29,8 +29,8 @@ C:\Users\Crow\.nuget\packages\avalonia.xaml.interactions.draggable\11.0.10.9\lib
 C:\Users\Crow\.nuget\packages\avalonia.xaml.interactions.events\11.0.10.9\lib\net8.0\Avalonia.Xaml.Interactions.Events.dll
 C:\Users\Crow\.nuget\packages\avalonia.xaml.interactions.responsive\11.0.10.9\lib\net8.0\Avalonia.Xaml.Interactions.Responsive.dll
 C:\Users\Crow\.nuget\packages\avalonia.xaml.interactivity\11.0.10.9\lib\net8.0\Avalonia.Xaml.Interactivity.dll
-C:\Dev\Projects\Swarm\Public\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit\obj\Debug\net6.0\ref\AvaloniaEdit.dll
-C:\Dev\Projects\Swarm\Public\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit.TextMate\obj\Debug\net6.0\ref\AvaloniaEdit.TextMate.dll
+c:\Dev\Projects\Swarm\Public\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit\obj\Debug\net6.0\ref\AvaloniaEdit.dll
+c:\Dev\Projects\Swarm\Public\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit.TextMate\obj\Debug\net6.0\ref\AvaloniaEdit.TextMate.dll
 C:\Users\Crow\.nuget\packages\communitytoolkit.mvvm\8.2.2\lib\net6.0\CommunityToolkit.Mvvm.dll
 C:\Users\Crow\.nuget\packages\harfbuzzsharp\7.3.0.3\lib\net6.0\HarfBuzzSharp.dll
 C:\Users\Crow\.nuget\packages\mediatr\8.1.0\lib\netstandard2.1\MediatR.dll
@@ -65,8 +65,13 @@ C:\Users\Crow\.nuget\packages\omnisharp.extensions.languageprotocol\0.19.9\lib\n
 C:\Users\Crow\.nuget\packages\omnisharp.extensions.languageserver.shared\0.19.9\lib\net6.0\OmniSharp.Extensions.LanguageServer.Shared.dll
 C:\Users\Crow\.nuget\packages\onigwrap\1.0.6\lib\netstandard2.0\Onigwrap.dll
 C:\Users\Crow\.nuget\packages\skiasharp\2.88.9\lib\net6.0\SkiaSharp.dll
+<<<<<<< HEAD
 C:\Dev\Projects\Swarm\Public\Swarm.Lsp\obj\Debug\net9.0\ref\Swarm.Lsp.dll
 C:\Dev\Projects\Swarm\Public\Swarm.Shared\obj\Debug\net9.0\ref\Swarm.Shared.dll
+=======
+c:\Dev\Projects\Swarm\Public\Swarm.Lsp\obj\Debug\net9.0\ref\Swarm.Lsp.dll
+c:\Dev\Projects\Swarm\Public\Swarm.Shared\obj\Debug\net9.0\ref\Swarm.Shared.dll
+>>>>>>> 4823c99bbf007d04507f3bad187338c25e51410a
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.4\ref\net9.0\System.AppContext.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.4\ref\net9.0\System.Buffers.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.4\ref\net9.0\System.Collections.Concurrent.dll

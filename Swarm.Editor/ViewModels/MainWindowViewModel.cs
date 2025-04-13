@@ -10,12 +10,11 @@ using Swarm.Editor.Common.Converters;
 using Swarm.Editor.Models.Services;
 using Swarm.Editor.Common.Commands;
 using Swarm.Editor.ViewModels.Chat;
-using Swarm.Agents.EventBus;
 using Microsoft.Extensions.Logging;
-using Swarm.Editor.Models.Events;
 using Microsoft.Extensions.Logging.Abstractions;
-
-using Swarm.Editor.ViewModels;
+using Swarm.Editor.ViewModels.Panels;
+using Swarm.Shared.EventBus;
+using Swarm.Shared.EventBus.Events;
 
 namespace Swarm.Editor.ViewModels
 {
@@ -24,27 +23,27 @@ namespace Swarm.Editor.ViewModels
         // Services
         private readonly IApplicationService _applicationService;
         private readonly IFileSystemService _fileSystemService;
-        private readonly ILogger<ChatViewModel> _logger;
+        private readonly ILogger<MainWindowViewModel> _logger;
         private readonly IEventBus _eventBus;
         
         // View Models
         public CodeEditorViewModel EditorViewModel { get; }
         
-        // Rename properties to use 'Panel'
-        private ViewModelBase? _leftPanelContent;
-        public ViewModelBase? LeftPanelContent 
+        // Rename properties to use 'Panel' and specific ViewModel types
+        private LeftPanelViewModel? _leftPanelContent;
+        public LeftPanelViewModel? LeftPanelContent
         {
             get => _leftPanelContent;
-            set => SetProperty(ref _leftPanelContent, value); 
+            private set => SetProperty(ref _leftPanelContent, value);
         }
 
-        private ViewModelBase? _rightPanelContent;
-        public ViewModelBase? RightPanelContent
+        private RightPanelViewModel? _rightPanelContent;
+        public RightPanelViewModel? RightPanelContent
         {
             get => _rightPanelContent;
-            set => SetProperty(ref _rightPanelContent, value);
+            private set => SetProperty(ref _rightPanelContent, value);
         }
-        
+
         // Document tabs
         private ObservableCollection<DocumentTabViewModel> _documentTabs = new();
         public ObservableCollection<DocumentTabViewModel> DocumentTabs
@@ -59,28 +58,46 @@ namespace Swarm.Editor.ViewModels
             get => _activeDocument;
             set
             {
-                if (_activeDocument != value)
+                var newValue = value ?? new DocumentTabViewModel(string.Empty, string.Empty); // Ensure non-null
+                Debug.WriteLine($"[DEBUG][ActiveDocument Set] Attempting to set ActiveDocument. Current: '{_activeDocument?.DisplayName ?? "null"}', New: '{newValue.DisplayName ?? "null"}'");
+
+                // If the value is actually changing
+                if (!ReferenceEquals(_activeDocument, newValue))
                 {
-                    // Save current content to the outgoing tab
-                    if (_activeDocument != null)
+                    Debug.WriteLine("[DEBUG][ActiveDocument Set] Value is changing.");
+                    // Save content of the outgoing tab *before* changing the active document
+                    if (_activeDocument != null && !_activeDocument.FilePath.Equals(string.Empty)) // Avoid saving the initial empty placeholder
                     {
-                        _activeDocument.Content = EditorViewModel.Text;
+                        Debug.WriteLine($"[DEBUG][ActiveDocument Set] Saving outgoing content for '{_activeDocument.DisplayName}'.");
+                        _activeDocument.Content = EditorViewModel.Text; // Assuming EditorViewModel.Text holds current editor state
                         _activeDocument.IsActive = false;
+                         Debug.WriteLine("[DEBUG][ActiveDocument Set] Outgoing content saved.");
                     }
-                    
-                    // Create a safe non-null reference first
-                    var newValue = value ?? new DocumentTabViewModel(string.Empty, string.Empty);
-                    
-                    // Instead of using SetProperty directly, manually handle the property change
-                    var oldValue = _activeDocument;
-                    _activeDocument = newValue;
-                    OnPropertyChanged(nameof(ActiveDocument));
-                    
-                    // Update editor with the incoming tab's content
-                    EditorViewModel.Text = newValue.Content;
-                    CurrentFilePath = newValue.FilePath;
-                    newValue.IsActive = true;
+                    else
+                    {
+                        Debug.WriteLine("[DEBUG][ActiveDocument Set] Skipping save for outgoing document (null or initial empty).");
+                    }
+
+                    // Use SetProperty to handle backing field update and notification
+                    if (SetProperty(ref _activeDocument, newValue))
+                    {
+                        Debug.WriteLine("[DEBUG][ActiveDocument Set] SetProperty succeeded. Loading new content.");
+                        // Update editor with the incoming tab's content *after* property change notification
+                        EditorViewModel.Text = _activeDocument.Content ?? string.Empty;
+                        CurrentFilePath = _activeDocument.FilePath ?? string.Empty;
+                        _activeDocument.IsActive = true;
+                        Debug.WriteLine($"[DEBUG][ActiveDocument Set] New content loaded for '{_activeDocument.DisplayName}'. Editor Text Length: {EditorViewModel.Text?.Length ?? 0}");
+                    }
+                    else
+                    {
+                         Debug.WriteLine("[DEBUG][ActiveDocument Set] SetProperty returned false (value might be the same reference after all?).");
+                    }
                 }
+                else
+                {
+                    Debug.WriteLine("[DEBUG][ActiveDocument Set] New value is same reference as old value. No change.");
+                }
+                Debug.WriteLine("[DEBUG][ActiveDocument Set] Setter finished.");
             }
         }
         
@@ -106,32 +123,24 @@ namespace Swarm.Editor.ViewModels
             IApplicationService? applicationService = null, 
             IFileSystemService? fileSystemService = null,
             IEventBus? eventBus = null,
-            ILogger<ChatViewModel>? chatLogger = null,
-            // Add parameters for injected VMs
-            FileExplorerViewModel? fileExplorerVm = null, 
-            ChatViewModel? chatVm = null)
+            ILogger<MainWindowViewModel>? logger = null)
         {
             // Initialize services
             _applicationService = applicationService ?? new ApplicationService();
             _fileSystemService = fileSystemService ?? new FileSystemService();
-            _eventBus = eventBus ?? new Swarm.Editor.Models.Events.InMemoryEventBus();
-            _logger = chatLogger ?? NullLogger<ChatViewModel>.Instance;
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
+            _logger = logger ?? NullLogger<MainWindowViewModel>.Instance;
             
             // Initialize view models
             EditorViewModel = new CodeEditorViewModel();
             
-            // Assign injected VMs (using Panel names)
-            LeftPanelContent = fileExplorerVm;
-            RightPanelContent = chatVm;
-
-            // Initialize active document to avoid CS8618 warning
-            _activeDocument = new DocumentTabViewModel(string.Empty, string.Empty);
+            // Instantiate Panel ViewModels, passing required services
+            LeftPanelContent = new LeftPanelViewModel(_fileSystemService, _eventBus);
+            RightPanelContent = new RightPanelViewModel(); // Assuming RightPanelViewModel doesn't need services yet
             
-            // Subscribe to file explorer events (update to use LeftPanelContent)
-            if (LeftPanelContent is FileExplorerViewModel explorerVm)
-            {
-                explorerVm.FileSelected += OnFileSelected;
-            }
+            // Initialize active document to avoid CS8618 warning
+            // Use a distinct initial empty object
+            _activeDocument = new DocumentTabViewModel(string.Empty, string.Empty, "InitialEmpty") { IsActive = true }; 
             
             // Initialize commands
             OpenFileCommand = new DelegateCommand(async () => await OpenFileDialogAsync());
@@ -143,12 +152,41 @@ namespace Swarm.Editor.ViewModels
             ExitCommand = new DelegateCommand(Exit);
             
             // No need to create a document on startup as user can click the + button
+            
+            // Subscribe to events
+            _eventBus.Subscribe<ChatMessageSentEvent>(HandleChatMessageSent);
+            _eventBus.Subscribe<FileOpenRequestedEvent>(HandleFileOpenRequestedAsync);
+            _logger.LogInformation("MainWindowViewModel initialized and subscribed to events.");
         }
 
-        private void OnFileSelected(object? sender, string filePath)
+        private Task HandleChatMessageSent(ChatMessageSentEvent sentEvent)
         {
-            // Use Task.Run to avoid UI blocking while allowing async execution
-            Task.Run(async () => await OpenFileAsync(filePath));
+            _logger.LogInformation("MainWindowViewModel received ChatMessageSentEvent: {Message}", sentEvent.Message);
+            return Task.CompletedTask;
+        }
+
+        // Handler for FileOpenRequestedEvent
+        private async Task HandleFileOpenRequestedAsync(FileOpenRequestedEvent ev)
+        {
+            Debug.WriteLine($"[DEBUG][HandleFileOpenRequestedAsync] Received event for: {ev?.FilePath ?? "null"}");
+            if (ev == null || string.IsNullOrEmpty(ev.FilePath))
+            {
+                 _logger.LogWarning("Received null or empty FileOpenRequestedEvent.");
+                 return;
+            }
+            
+            _logger.LogInformation("Handling FileOpenRequestedEvent for: {FilePath}", ev.FilePath);
+            try
+            {
+                await OpenFileAsync(ev.FilePath);
+                Debug.WriteLine($"[DEBUG][HandleFileOpenRequestedAsync] OpenFileAsync completed for: {ev.FilePath}");
+            }
+            catch (Exception ex)
+            {
+                 _logger.LogError(ex, "Error handling FileOpenRequestedEvent for {FilePath}", ev.FilePath);
+                 Debug.WriteLine($"[ERROR][HandleFileOpenRequestedAsync] Error processing {ev.FilePath}: {ex.Message}");
+                 // Optionally: show an error message to the user
+            }
         }
         
         private void CreateNewDocument()
@@ -163,126 +201,179 @@ namespace Swarm.Editor.ViewModels
             ActiveDocument = newDocument;
         }
         
-        private void CloseDocument(DocumentTabViewModel document)
+        private void CloseDocument(DocumentTabViewModel? document)
         {
-            if (document == null) return;
+            if (document == null || !DocumentTabs.Contains(document)) return;
             
+            Debug.WriteLine($"[DEBUG][CloseDocument] Closing tab: {document.DisplayName}");
             // ToDo: Add warning for unsaved changes
             
             int index = DocumentTabs.IndexOf(document);
-            DocumentTabs.Remove(document);
+            bool wasActive = ReferenceEquals(ActiveDocument, document);
             
-            // Select a new active document if we closed the active one and there are still tabs
-            if (DocumentTabs.Count > 0)
+            DocumentTabs.Remove(document);
+            Debug.WriteLine($"[DEBUG][CloseDocument] Tab removed from collection. Count: {DocumentTabs.Count}");
+            
+            if (wasActive)
             {
-                ActiveDocument = DocumentTabs[Math.Min(index, DocumentTabs.Count - 1)];
-            }
-            else
-            {
-                // When no documents are left, reset the editor content but don't create a new tab
-                EditorViewModel.Text = string.Empty;
-                CurrentFilePath = string.Empty;
-                
-                // Keep the initialized empty document as the active document
-                // This won't be visible in the UI as a tab
+                if (DocumentTabs.Count > 0)
+                {
+                    // Select the previous tab, or the first one if closing the first tab
+                    ActiveDocument = DocumentTabs[Math.Max(0, index - 1)];
+                     Debug.WriteLine($"[DEBUG][CloseDocument] Setting new active tab: {ActiveDocument.DisplayName}");
+                }
+                else
+                {
+                    // No tabs left, set active to the initial empty placeholder
+                    // Create a *new* initial empty placeholder to ensure it's a different reference
+                    ActiveDocument = new DocumentTabViewModel(string.Empty, string.Empty, "InitialEmpty");
+                    EditorViewModel.Text = string.Empty; // Clear editor manually
+                    CurrentFilePath = string.Empty;
+                    Debug.WriteLine("[DEBUG][CloseDocument] No tabs left, resetting to initial empty state.");
+                }
             }
         }
         
         // Command implementations
         private async Task OpenFileDialogAsync()
         {
+             Debug.WriteLine("[DEBUG][OpenFileDialogAsync] Entered.");
             try
             {
                 var filePath = await _fileSystemService.OpenFileDialogAsync();
                 if (!string.IsNullOrEmpty(filePath))
                 {
+                     Debug.WriteLine($"[DEBUG][OpenFileDialogAsync] File selected: {filePath}");
                     await OpenFileAsync(filePath);
+                }
+                else
+                {
+                     Debug.WriteLine("[DEBUG][OpenFileDialogAsync] No file selected.");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error opening file dialog: {ex.Message}");
+                _logger.LogError(ex, "Error opening file dialog.");
+                Debug.WriteLine($"[ERROR][OpenFileDialogAsync] Error: {ex.Message}");
+                // Optionally: show error message to user
             }
         }
         
         private async Task OpenFileAsync(string filePath)
         {
+            Debug.WriteLine($"[DEBUG][OpenFileAsync] Entered for: {filePath}");
+            if (string.IsNullOrEmpty(filePath))
+            {
+                Debug.WriteLine("[DEBUG][OpenFileAsync] filePath is null or empty, exiting.");
+                return;
+            }
+
             try
             {
-                if (_fileSystemService.FileExists(filePath))
+                if (!_fileSystemService.FileExists(filePath))
                 {
-                    // Check if the file is already open
-                    var existingTab = DocumentTabs.FirstOrDefault(t => t.FilePath == filePath);
-                    if (existingTab != null)
+                    _logger.LogWarning("Attempted to open non-existent file: {FilePath}", filePath);
+                    Debug.WriteLine($"[DEBUG][OpenFileAsync] File does not exist: {filePath}");
+                    // Optionally show message to user
+                    return;
+                }
+                
+                Debug.WriteLine("[DEBUG][OpenFileAsync] File exists.");
+                var existingTab = DocumentTabs.FirstOrDefault(t => t.FilePath == filePath);
+                if (existingTab != null)
+                {
+                    Debug.WriteLine($"[DEBUG][OpenFileAsync] Tab already exists for: {filePath}. Activating.");
+                    if (!ReferenceEquals(ActiveDocument, existingTab))
                     {
-                        ActiveDocument = existingTab;
-                        return;
-                    }
-                    
-                    var content = await _fileSystemService.ReadFileAsync(filePath);
-                    var document = new DocumentTabViewModel(filePath, content);
-                    
-                    // Check if there's only one tab and it's an untitled document
-                    // Always replace it regardless of content
-                    var untitledTab = DocumentTabs.FirstOrDefault(d => 
-                        d.FilePath == null && 
-                        d.DisplayName.StartsWith("Untitled"));
-                    
-                    if (untitledTab != null && DocumentTabs.Count == 1)
-                    {
-                        // Replace the untitled document
-                        int index = DocumentTabs.IndexOf(untitledTab);
-                        DocumentTabs.RemoveAt(index);
-                        DocumentTabs.Insert(index, document);
+                         ActiveDocument = existingTab;
                     }
                     else
                     {
-                        // Just add a new tab
-                        DocumentTabs.Add(document);
+                        Debug.WriteLine("[DEBUG][OpenFileAsync] Tab is already active.");
                     }
-                    
-                    ActiveDocument = document;
+                    return;
                 }
+                
+                string? content = null;
+                try
+                {
+                    Debug.WriteLine($"[DEBUG][OpenFileAsync] Reading file content for: {filePath}");
+                    content = await _fileSystemService.ReadFileAsync(filePath);
+                    Debug.WriteLine($"[DEBUG][OpenFileAsync] Read content successfully. Length: {content?.Length ?? 0}");
+                }
+                catch(IOException ioEx)
+                {
+                     _logger.LogError(ioEx, "IO Error reading file {FilePath}", filePath);
+                     Debug.WriteLine($"[ERROR][OpenFileAsync] IO Error reading {filePath}: {ioEx.Message}");
+                     // Show error message to user
+                     return; 
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error reading file {FilePath}", filePath);
+                    Debug.WriteLine($"[ERROR][OpenFileAsync] Error reading {filePath}: {ex.Message}");
+                    // Optionally show error message to user
+                    return; // Don't proceed if file couldn't be read
+                }
+
+                if (content == null)
+                {
+                    _logger.LogWarning("ReadFileAsync returned null content for {FilePath}", filePath);
+                    Debug.WriteLine($"[ERROR][OpenFileAsync] Read content was null for {filePath}");
+                    // Optionally show error message
+                    return;
+                }
+                
+                Debug.WriteLine("[DEBUG][OpenFileAsync] Creating new DocumentTabViewModel.");
+                var document = new DocumentTabViewModel(filePath, content);
+                
+                DocumentTabs.Add(document);
+                Debug.WriteLine($"[DEBUG][OpenFileAsync] Added new tab to DocumentTabs. Count: {DocumentTabs.Count}");
+                ActiveDocument = document;
+                Debug.WriteLine($"[DEBUG][OpenFileAsync] Set new tab as ActiveDocument: {document.DisplayName}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error opening file: {ex.Message}");
+                _logger.LogError(ex, "Unexpected error in OpenFileAsync for {FilePath}", filePath);
+                Debug.WriteLine($"[ERROR][OpenFileAsync] Unexpected error opening {filePath}: {ex.Message}");
+                // Optionally show a generic error message to user
             }
         }
         
         private async Task OpenFolderDialogAsync()
         {
+            Debug.WriteLine("[DEBUG][OpenFolderDialogAsync] Entered.");
             try
             {
                 var folderPath = await _fileSystemService.OpenFolderDialogAsync();
                 if (!string.IsNullOrEmpty(folderPath))
                 {
-                    // Access LoadFolderAsync via LeftPanelContent with checks
-                    if (LeftPanelContent is FileExplorerViewModel explorerVm)
-                    {
-                        await explorerVm.LoadFolderAsync(folderPath);
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Error: LeftPanelContent is not a FileExplorerViewModel.");
-                        // Optionally log this error or display a user message
-                    }
+                    Debug.WriteLine($"[DEBUG][OpenFolderDialogAsync] Publishing FolderSelectedEvent for: {folderPath}");
+                    await _eventBus.PublishAsync(new FolderSelectedEvent(folderPath));
+                     Debug.WriteLine("[DEBUG][OpenFolderDialogAsync] FolderSelectedEvent published.");
+                }
+                 else
+                {
+                    Debug.WriteLine("[DEBUG][OpenFolderDialogAsync] No folder selected.");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error opening folder dialog: {ex.Message}");
+                 _logger.LogError(ex, "Error opening folder dialog.");
+                 Debug.WriteLine($"[ERROR][OpenFolderDialogAsync] Error: {ex.Message}");
+                 // Optionally: show error message to user
             }
         }
         
         private async Task SaveFileAsync()
         {
             if (ActiveDocument == null) return;
-            
-            // Capture the current content from the editor
+             Debug.WriteLine($"[DEBUG][SaveFileAsync] Entered for: {ActiveDocument.FilePath ?? "Untitled"}");
+
+            // Ensure content is up-to-date before saving
             ActiveDocument.Content = EditorViewModel.Text;
-            
-            if (string.IsNullOrEmpty(ActiveDocument.FilePath))
+
+            if (string.IsNullOrEmpty(ActiveDocument.FilePath) || !_fileSystemService.FileExists(ActiveDocument.FilePath))
             {
                 await SaveFileAsDialogAsync();
             }
@@ -292,40 +383,56 @@ namespace Swarm.Editor.ViewModels
                 {
                     await _fileSystemService.WriteFileAsync(ActiveDocument.FilePath, ActiveDocument.Content);
                     ActiveDocument.IsModified = false;
+                    Debug.WriteLine($"[DEBUG][SaveFileAsync] File saved: {ActiveDocument.FilePath}");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error saving file: {ex.Message}");
+                    _logger.LogError(ex, "Error saving file {FilePath}", ActiveDocument.FilePath);
+                     Debug.WriteLine($"[ERROR][SaveFileAsync] Error saving {ActiveDocument.FilePath}: {ex.Message}");
+                    // Show error message
                 }
             }
         }
         
         private bool CanSaveFile()
         {
-            return ActiveDocument != null && !string.IsNullOrEmpty(ActiveDocument.Content);
+            // Can save if there is an active document
+            return ActiveDocument != null && !ActiveDocument.FilePath.Equals(string.Empty); 
         }
         
         private async Task SaveFileAsDialogAsync()
         {
             if (ActiveDocument == null) return;
-            
+             Debug.WriteLine($"[DEBUG][SaveFileAsDialogAsync] Entered.");
+
+            // Ensure content is up-to-date before saving
+            ActiveDocument.Content = EditorViewModel.Text;
+            bool wasUntitled = string.IsNullOrEmpty(ActiveDocument.FilePath); // Check if it was untitled before saving
+
             try
             {
-                var filePath = await _fileSystemService.SaveFileDialogAsync();
+                var filePath = await _fileSystemService.SaveFileDialogAsync(ActiveDocument.DisplayName);
                 if (!string.IsNullOrEmpty(filePath))
                 {
-                    // Capture the current content from the editor
-                    ActiveDocument.Content = EditorViewModel.Text;
-                    
-                    await _fileSystemService.WriteFileAsync(filePath, ActiveDocument.Content);
                     ActiveDocument.FilePath = filePath;
-                    ActiveDocument.IsModified = false;
-                    CurrentFilePath = filePath;
+                    // Update DisplayName only if it was previously an untitled document
+                    if (wasUntitled) 
+                    { 
+                        ActiveDocument.DisplayName = Path.GetFileName(filePath);
+                    }
+                    await SaveFileAsync(); // Call save now that we have a path
+                     Debug.WriteLine($"[DEBUG][SaveFileAsDialogAsync] File saved as: {filePath}");
+                }
+                 else
+                {
+                     Debug.WriteLine("[DEBUG][SaveFileAsDialogAsync] Save As dialog cancelled.");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error showing save file dialog: {ex.Message}");
+                 _logger.LogError(ex, "Error showing Save As dialog.");
+                 Debug.WriteLine($"[ERROR][SaveFileAsDialogAsync] Error: {ex.Message}");
+                 // Show error message
             }
         }
         

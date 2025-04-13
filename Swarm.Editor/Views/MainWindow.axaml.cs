@@ -18,9 +18,6 @@ namespace Swarm.Editor
             // Call the source-generated method
             InitializeComponent();
             
-            // Set the DataContext to a new instance of MainWindowViewModel
-            DataContext = new MainWindowViewModel();
-            
             // Hook loaded event 
             this.Loaded += MainWindow_Loaded;
         }

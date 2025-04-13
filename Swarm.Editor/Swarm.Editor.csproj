@@ -22,8 +22,11 @@
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.6" />
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.10.9" />
 
-    <!-- AvaloniaEdit Library -->
-    <ProjectReference Include="..\ThirdParty\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj">
+    <!-- AvaloniaEdit Libraries - Local Project References -->
+    <ProjectReference Include="..\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj">
+      <SetTargetFramework Condition="'$(TargetFramework)' == 'net9.0'">TargetFramework=net6.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj">
       <SetTargetFramework Condition="'$(TargetFramework)' == 'net9.0'">TargetFramework=net6.0</SetTargetFramework>
     </ProjectReference>
 
@@ -33,10 +36,12 @@
     <!-- Add Logging -->
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     
-    <!-- Project References -->
-    <ProjectReference Include="..\Swarm.Agents\Swarm.Agents.csproj" />
-    <ProjectReference Include="..\Swarm.Shared\Swarm.Shared.csproj" />
+    <!-- Project References - Corrected Path & Removed Agents -->
+    <!-- <ProjectReference Include="..\Swarm.Agents\Swarm.Agents.csproj" /> --> <!-- Remove reference to Agents -->
+    <ProjectReference Include="..\Swarm.Shared\Swarm.Shared.csproj" /> <!-- Correct path to Shared -->
+
   </ItemGroup>
 
   <!-- Re-add ApplicationDefinition -->
@@ -49,9 +54,10 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
-  <!-- Ensure AvaloniaEdit is built first -->
-  <Target Name="EnsureAvaloniaEditBuilt" BeforeTargets="Build">
-    <MSBuild Projects="..\ThirdParty\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj" Targets="Build" />
+  <!-- Ensure AvaloniaEdit dependencies are built first -->
+  <Target Name="EnsureAvaloniaEditDepsBuilt" BeforeTargets="Build">
+    <MSBuild Projects="..\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj" Targets="Build" />
+    <MSBuild Projects="..\Swarm.Editor.Libraries\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj" Targets="Build" />
   </Target>
 
 </Project> 

@@ -7,6 +7,8 @@
         xmlns:explorer="using:Swarm.Editor.Views.FileExplorer"
         xmlns:chat="using:Swarm.Editor.Views.Chat"
         xmlns:vm="using:Swarm.Editor.ViewModels"
+        xmlns:views="using:Swarm.Editor.Views"
+        xmlns:panels_vm="using:Swarm.Editor.ViewModels.Panels"
         xmlns:converters="using:Swarm.Editor.Common.Converters"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="Swarm.Editor.MainWindow"
@@ -22,23 +24,7 @@
     </Window.Resources>
 
     <Window.Styles>
-        <!-- Global styles apply to all windows -->
-        <Style Selector="Window">
-            <Setter Property="Background" Value="#1E1E1E"/>
-        </Style>
-
-        <!-- Start: Menu Styles -->
-        <Style Selector="Menu">
-            <Setter Property="Background" Value="#2D2D30"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="Height" Value="30"/>
-        </Style>
-        
-        <Style Selector="MenuItem">
-            <Setter Property="Foreground" Value="White"/>
-        </Style>
-        <!-- End: Menu Styles -->
+        <!-- Styles specific to MainWindow elements -->
 
         <!-- Start: Status Bar Styles -->
         <Style Selector="Border.statusBar">
@@ -56,33 +42,18 @@
         </Style>
         <!-- End: Status Bar Styles -->
 
-        <!-- Start: Layout Styles -->
-        <!-- Style for the main SplitView separator -->
-        
-        <Style Selector="GridSplitter">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Width" Value="0"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="ResizeDirection" Value="Columns"/>
-        </Style>
-        
-        
+        <!-- Start: Layout Styles (Specific to MainWindow) -->
         <Style Selector="Border.swarmPanel">
             <Setter Property="BorderThickness" Value="1,0,0,0"/>
             <Setter Property="BorderBrush" Value="#3F3F46"/>
             <Setter Property="Background" Value="#252526"/>
         </Style>
         
-        <Style Selector="TextBlock.placeholderText">
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Foreground" Value="#E8E8E8"/>
-        </Style>
-        
+        <!-- 
         <Style Selector="Grid.editorGrid">
             <Setter Property="Background" Value="#1E1E1E"/>
         </Style>
+        -->
         <!-- End: Layout Styles -->
 
     </Window.Styles>
@@ -129,76 +100,45 @@
                 <ColumnDefinition Width="300" MinWidth="100"/>  <!-- Col 4: Swarm Panel -->
             </Grid.ColumnDefinitions>
             
-            <!-- Left Pane: File Explorer -->
-            <ContentControl Grid.Column="0" Content="{Binding LeftPanelContent}" />
+            <!-- Left Pane: File Explorer - Wrap in Border with swarmPanel style -->
+            <Border Grid.Column="0" Classes="swarmPanel">
+                <ContentControl Content="{Binding LeftPanelContent}"/>
+            </Border>
             
             <!-- Splitter 1 -->
             <GridSplitter Grid.Column="1" Width="1" Background="Transparent" Margin="-6,0,0,0" />
             
-            <!-- Editor Area -->
-            <Grid Grid.Column="2" Classes="editorGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <!-- Tab Bar with + Button -->
-                <DockPanel Grid.Row="0" Height="32" LastChildFill="True" Background="#2D2D30">
-                    <!-- New File Button -->
-                    <Button DockPanel.Dock="Right" 
-                           Command="{Binding NewFileCommand}" 
-                           Width="32" 
-                           Height="32"
-                           Background="#2D2D30"
-                           Foreground="#CCCCCC"
-                           BorderThickness="0">
-                        <TextBlock Text="+" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    
-                    <!-- Document Tabs -->
-                    <TabControl Name="DocumentTabControl"
-                              ItemsSource="{Binding DocumentTabs}"
-                              SelectedItem="{Binding ActiveDocument}"
-                              TabStripPlacement="Top"
-                              Padding="0"
-                              Margin="0">
-                        <TabControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding TabTitle}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <Button Grid.Column="1" Classes="closeTab"
-                                          Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                          CommandParameter="{Binding}">
-                                        <TextBlock Text="✕" FontSize="8"/>
-                                    </Button>
-                                </Grid>
-                            </DataTemplate>
-                        </TabControl.ItemTemplate>
-                        <TabControl.ContentTemplate>
-                            <DataTemplate>
-                                <!-- Empty template to suppress default content display -->
-                            </DataTemplate>
-                        </TabControl.ContentTemplate>
-                    </TabControl>
-                </DockPanel>
-                
-                <!-- Editor Content -->
-                <ContentPresenter Grid.Row="1"
-                                 Content="{Binding #DocumentTabControl.SelectedItem}"
-                                 ContentTemplate="{StaticResource EditorTemplate}" 
-                                 Margin="0,8,0,0" 
-                                 />
-            </Grid>
+            <!-- Center Content Panel - Replaced ContentControl with TabControl -->
+            <TabControl Grid.Column="2"
+                        ItemsSource="{Binding DocumentTabs}"
+                        SelectedItem="{Binding ActiveDocument, Mode=TwoWay}"
+                        Padding="0" Margin="0">
+                <TabControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:DocumentTabViewModel}">
+                        <DockPanel LastChildFill="True">
+                            <Button Content="X" 
+                                    Command="{Binding $parent[TabControl].DataContext.CloseTabCommand}" 
+                                    CommandParameter="{Binding}"
+                                    Padding="3,0" Margin="5,0,0,0" FontSize="10"
+                                    Background="Transparent" BorderThickness="0" Foreground="#CCCCCC"
+                                    DockPanel.Dock="Right" />
+                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate DataType="{x:Type vm:DocumentTabViewModel}">
+                        <!-- Display the DocumentView, its DataContext is already the DocumentTabViewModel -->
+                        <views:DocumentView /> 
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
             
             <!-- Splitter 2 -->
             <GridSplitter Grid.Column="3" Width="1" Background="Transparent" Margin="0,0,-6,0" ZIndex="1" />
             
-            <!-- Swarm Panel -->
-            <Border Grid.Column="4" Classes="swarmPanel" Background="#252526"> 
+            <!-- Swarm Panel - Remove explicit Background -->
+            <Border Grid.Column="4" Classes="swarmPanel"> 
                  <ContentControl Content="{Binding RightPanelContent}" />
             </Border>
         </Grid>

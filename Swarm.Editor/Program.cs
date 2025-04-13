@@ -12,25 +12,33 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        Console.WriteLine("Program.Main: Starting application...");
         try
         {
+            Console.WriteLine("Program.Main: Calling BuildAvaloniaApp().StartWithClassicDesktopLifetime...");
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
+            Console.WriteLine("Program.Main: StartWithClassicDesktopLifetime returned. (Should not happen unless window closed)");
         }
         catch (Exception e)
         {
             // Log the exception 
-            Console.WriteLine("Unhandled exception: " + e.ToString());
+            Console.WriteLine("!!! Program.Main: Unhandled exception caught !!!");
+            Console.WriteLine(e.ToString());
             // Optionally rethrow, show a message box, etc.
             throw; 
         }
+        Console.WriteLine("Program.Main: Exiting normally.");
     }
 
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        Console.WriteLine("BuildAvaloniaApp: Configuring AppBuilder...");
+        return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace();
             // .UseReactiveUI(); // Uncomment if using ReactiveUI
+    }
 } 

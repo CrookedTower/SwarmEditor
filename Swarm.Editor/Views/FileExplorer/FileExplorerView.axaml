@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Swarm.Editor.ViewModels"
              xmlns:converters="using:Swarm.Editor.Common.Converters"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="Swarm.Editor.Views.FileExplorer.FileExplorerView">
 
@@ -31,6 +33,12 @@
                 <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal" Spacing="5" Margin="-4,0,0,0">
+                            <i:Interaction.Behaviors>
+                                <ia:EventTriggerBehavior EventName="DoubleTapped">
+                                    <ia:InvokeCommandAction Command="{Binding $parent[UserControl].DataContext.OpenFileCommand}" 
+                                                          CommandParameter="{Binding}"/>
+                                </ia:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                             <!-- Show different icon for files vs folders -->
                             <TextBlock Text="{Binding IsDirectory, Converter={StaticResource BoolToFolderIconConverter}}"
                                        FontSize="10" />

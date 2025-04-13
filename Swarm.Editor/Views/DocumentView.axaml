@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:vm="clr-namespace:Swarm.Editor.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Swarm.Editor.Views.DocumentView">
+
+    <ae:TextEditor x:Name="Editor" 
+                   Document="{Binding Content, Converter={StaticResource StringToTextDocumentConverter}}"
+                   IsReadOnly="{Binding DataContext.EditorViewModel.IsReadOnly, RelativeSource={RelativeSource AncestorType=Window}}"
+                   FontFamily="{StaticResource CodeFontFamily}" 
+                   FontSize="{StaticResource CodeFontSize}"
+                   SyntaxHighlighting="{Binding FilePath, Converter={StaticResource FilePathToSyntaxHighlightingConverter}}"
+                   ShowLineNumbers="True"
+                   HorizontalScrollBarVisibility="Auto"
+                   VerticalScrollBarVisibility="Auto"
+                   Padding="0,5,0,0" />
+
+</UserControl> 

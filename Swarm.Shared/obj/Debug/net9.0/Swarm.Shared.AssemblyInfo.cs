@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Swarm.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+627b22e249a1942dd886d0926ad9b66fca967607")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82a6e98fc0c5459070662ef9938fcd8a525a228d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Swarm.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Swarm.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

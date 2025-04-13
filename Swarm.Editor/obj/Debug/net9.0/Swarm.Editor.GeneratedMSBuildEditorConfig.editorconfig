@@ -15,29 +15,35 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Swarm.Editor
-build_property.ProjectDir = C:\Dev\Projects\Swarm\Swarm.Editor\
+build_property.ProjectDir = C:\Dev\Projects\Swarm\Public\Swarm.Editor\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/App.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/Styles/CommonStyles.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Styles/CommonStyles.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/Views/Chat/ChatPanel.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/Chat/ChatPanel.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/Views/Chat/ChatView.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/Chat/ChatView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/Views/CodeEditor/SwarmCodeEditor.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/CodeEditor/SwarmCodeEditor.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/Views/FileExplorer/FileExplorerView.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/DocumentView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Dev/Projects/Swarm/Swarm.Editor/Views/MainWindow.axaml]
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/EditorAreaView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/FileExplorer/FileExplorerView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Dev/Projects/Swarm/Public/Swarm.Editor/Views/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

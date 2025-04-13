@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Dev\\Projects\\Swarm\\Swarm.Shared\\Swarm.Shared.csproj",
+      "projectUniqueName": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj",
       "projectName": "Swarm.Shared",
-      "projectPath": "C:\\Dev\\Projects\\Swarm\\Swarm.Shared\\Swarm.Shared.csproj",
+      "projectPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\Swarm.Shared.csproj",
       "packagesPath": "C:\\Users\\Crow\\.nuget\\packages\\",
-      "outputPath": "C:\\Dev\\Projects\\Swarm\\Swarm.Shared\\obj\\",
+      "outputPath": "C:\\Dev\\Projects\\Swarm\\Public\\Swarm.Shared\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

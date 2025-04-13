@@ -1,6 +1,39 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Add Styles Here -->
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit" 
+        xmlns:editing="clr-namespace:AvaloniaEdit.Editing;assembly=AvaloniaEdit"
+        xmlns:rendering="clr-namespace:AvaloniaEdit.Rendering;assembly=AvaloniaEdit">
+    <!-- General App Styles -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="#1E1E1E"/>
+    </Style>
+    
+    <Style Selector="Menu">
+        <Setter Property="Background" Value="#2D2D30"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Height" Value="30"/>
+    </Style>
+    
+    <Style Selector="MenuItem">
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    
+    <Style Selector="GridSplitter">
+        <Setter Property="Background" Value="Transparent"/> <!-- Default to transparent, specific ones override -->
+        <Setter Property="Width" Value="1"/> <!-- Default to 1px width -->
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="ResizeDirection" Value="Columns"/>
+    </Style>
+    
+    <Style Selector="TextBlock.placeholderText">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="#E8E8E8"/>
+    </Style>
+
+    <!-- TreeView Styles -->
     <Style Selector="TreeView">
         <Setter Property="Background" Value="#252526"/>
         <Setter Property="Foreground" Value="#E8E8E8"/>
@@ -82,5 +115,20 @@
     </Style>
     <Style Selector="Button.closeTab:pointerover">
         <Setter Property="Foreground" Value="White"/>
+    </Style>
+    
+    <!-- AvaloniaEdit Styles -->
+    <Style Selector="editing|LineNumberMargin">
+        <!-- Adds space between marker margin and line number margin -->
+        <Setter Property="Margin" Value="0,0,5,0"/>
+    </Style>
+
+    <Style Selector="rendering|TextView">
+        <!-- Adds space between line number margin and the start of the text -->
+        <Setter Property="Margin" Value="5,0,0,0"/>
+    </Style>
+    
+    <Style Selector="ae|TextEditor">
+        <Setter Property="Background" Value="#1E1E1E"/>
     </Style>
 </Styles> 

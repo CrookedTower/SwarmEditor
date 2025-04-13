@@ -5,10 +5,14 @@
              xmlns:vm="using:Swarm.Editor.ViewModels.Chat"
              xmlns:model="using:Swarm.Editor.Models.Chat"
              xmlns:converters="using:Swarm.Editor.Common.Converters"
-             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="600"
              x:Class="Swarm.Editor.Views.Chat.ChatPanel"
              x:DataType="vm:ChatViewModel">
     
+    <UserControl.Resources>
+        <converters:BoolToAlignmentConverter x:Key="BoolToAlignmentConverter" />
+    </UserControl.Resources>
+
     <Grid RowDefinitions="Auto,*,Auto">
         <!-- Header -->
         <Border Grid.Row="0" 
@@ -33,23 +37,19 @@
             </Grid>
         </Border>
         
-        <!-- Message List -->
+        <!-- Chat Messages Area -->
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Messages}" Margin="5">
+            <ItemsControl ItemsSource="{Binding Messages}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="model:ChatMessage">
-                        <Border Margin="5" 
-                                Padding="10" 
-                                CornerRadius="8" 
-                                Background="{Binding IsUserMessage, Converter={StaticResource BoolToBackgroundConverter}}">
+                    <DataTemplate DataType="{x:Type vm:ChatMessageViewModel}">
+                        <Border Margin="5"
+                                Padding="10"
+                                CornerRadius="5"
+                                Background="{Binding IsUserMessage, Converter={StaticResource BoolToBackgroundConverter}, ConverterParameter='#3A3A3A|#252526'}"
+                                HorizontalAlignment="{Binding IsUserMessage, Converter={StaticResource BoolToAlignmentConverter}, ConverterParameter='Right|Left'}">
                             <StackPanel>
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Grid.Column="1" Text="{Binding Timestamp, StringFormat=\{0:HH:mm\}}"
-                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                               HorizontalAlignment="Right"
-                                               FontSize="11" />
-                                </Grid>
-                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" Margin="0,5,0,0" />
+                                <TextBlock Text="{Binding Sender}" FontWeight="Bold" Foreground="#CCCCCC"/>
+                                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Foreground="#E8E8E8"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -66,16 +66,15 @@
                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
         
         <!-- Input Area -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="10">
-            <TextBox Grid.Column="0"
-                     Text="{Binding InputText}"
-                     Watermark="Type your message here..."
-                     AcceptsReturn="False" />
-            <Button Grid.Column="1"
-                    Content="Send"
-                    Command="{Binding SendMessageCommand}"
-                    IsEnabled="{Binding !!InputText}"
-                    Margin="5,0,0,0" />
-        </Grid>
+        <DockPanel Grid.Row="2" Margin="5">
+            <Button DockPanel.Dock="Right" 
+                    Content="Send" 
+                    Command="{Binding SendMessageCommand}" 
+                    Margin="5,0,0,0"/>
+            <TextBox Watermark="Type your message..." 
+                     AcceptsReturn="False" 
+                     Text="{Binding CurrentMessage, Mode=TwoWay}"
+                     VerticalAlignment="Center" />
+        </DockPanel>
     </Grid>
 </UserControl> 
